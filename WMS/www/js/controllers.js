@@ -197,8 +197,8 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
             }
         };
         $scope.reset = function() {
-            $scope.Setting.WebApiURL = 'www.sysfreight.net/WebApi-wh';
-            $scope.Setting.WebSiteUrl = 'www.sysfreight.net/mobileapp-wh';
+            $scope.Setting.WebApiURL = ENV.reset.api;
+            $scope.Setting.WebSiteUrl = ENV.reset.website;
             $scope.Setting.SSL = { checked: false };
             if ( !ENV.fromWeb ) {
                 var path = cordova.file.externalRootDirectory;
