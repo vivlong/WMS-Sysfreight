@@ -11,13 +11,8 @@ namespace WebApi.ServiceModel.Tables
 								public int LineItemNo { get; set; }
 								public string StoreNo { get; set; }
 								public string StagingAreaFlag { get; set; }
-								public string BarCode { get; set; }
-        public int ProductTrxNo { get; set; }
 								public string ProductCode { get; set; }
 								public string ProductDescription { get; set; }
-        public string DimensionFlag { get; set; }
-        public int PackingQty { get; set; }
-        public int WholeQty { get; set; }
-        public int LooseQty { get; set; }
+        public int Qty { get; set; }
     }
 }

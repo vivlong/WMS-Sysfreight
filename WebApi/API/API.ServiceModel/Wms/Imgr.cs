@@ -129,11 +129,10 @@ namespace WebApi.ServiceModel.Wms
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
 																{
-																				List<Impa1> impa1 = db.Select<Impa1>("Select * from Impa1");
-																				string strBarCodeFiled = impa1[0].BarCodeField;
-																				string strSql = "Select Imgr2.*, " +
-																								"(Select Top 1 " + strBarCodeFiled + " From Impr1 Where TrxNo=Imgr2.ProductTrxNo) AS BarCode," +
-																								"(Select StagingAreaFlag From Whwh2 Where WarehouseCode=Imgr2.WarehouseCode And StoreNo=Imgr2.StoreNo) AS StagingAreaFlag " +
+																				string strSql = "Select Imgr2.TrxNo, Imgr2.LineItemNo, IsNull(Imgr2.StoreNo,'') AS StoreNo," +
+																								"(Select StagingAreaFlag From Whwh2 Where WarehouseCode=Imgr2.WarehouseCode And StoreNo=Imgr2.StoreNo) AS StagingAreaFlag," +
+																								"IsNull(Imgr2.ProductCode,'') AS ProductCode, IsNull(Imgr2.ProductDescription,'') AS ProductDescription," +
+																								"(Case Imgr2.DimensionFlag When '1' Then Imgr2.PackingQty When '2' Then Imgr2.WholeQty Else Imgr2.LooseQty End) AS Qty " +
 																								"From Imgr2 " +
 																								"Left Join Imgr1 On Imgr2.TrxNo = Imgr1.TrxNo " +
 																								"Where Imgr1.GoodsReceiptNoteNo='" + request.GoodsReceiptNoteNo + "'";
