@@ -12,7 +12,7 @@
                 </div>
                 <div class="col col-67">
                     <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowImgr1(Rcbp1.selected.BusinessPartyCode)">
-                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName}}</ui-select-match>
+                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
                         <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
                             <div ng-bind="Rcbp1.BusinessPartyName"></div>
                         </ui-select-choices>
@@ -27,7 +27,7 @@
                     <label>GRN No</label>
                 </div>
                 <div class="col col-67">
-                    <ui-select theme="bootstrap" ng-model="GrnNo.selected" reset-search-input="true" on-select="GoToDetail(GrnNo.selected)">
+                    <ui-select theme="bootstrap" ng-model="GrnNo.selected" reset-search-input="true" on-select="ShowImgr2(GrnNo.selected.GoodsReceiptNoteNo)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.GoodsReceiptNoteNo}}</ui-select-match>
                         <ui-select-choices repeat="GrnNo in GrnNos track by $index" refresh="refreshGrnNos($select.search)" refresh-delay="0" position="down">
                             <div ng-bind="GrnNo.GoodsReceiptNoteNo"></div>
@@ -40,7 +40,16 @@
     </ion-pane>
     <ion-content style="margin-top:100px;">
         <ion-list id="div-grt-list" tabindex="-1">
-            <ion-item ng-repeat="Imgr1 in Imgr1s" id="Imgr1-{{ Imgr1.Index }}" class="item-remove-animate item-icon-right" ng-click="GoToDetail(Imgr1)">
+            <ion-item ng-repeat="Imgr2 in Imgr2s" class="item-remove-animate item-icon-right">
+                <p style="font-size:0.8em;">Product Code&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr2.ProductCode" style="font-size:1.2em;"></span></p>
+                <p style="font-size:0.8em;">Description&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr2.ProductDescription" style="font-size:1.3em;"></span></p>
+                <p style="font-size:0.8em;">Qty&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr2.Qty" style="font-size:1.1em;"></span></p>
+                <label class="item item-input">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Store No&nbsp;&nbsp;:</span>
+                    <input type="text" ng-model="Imgr2.StoreNo" style="padding-right: 14px;">
+                </label>                
+            </ion-item>
+            <ion-item ng-repeat="Imgr1 in Imgr1s" id="Imgr1-{{ Imgr1.Index }}" class="item-remove-animate item-icon-right" ng-click="ShowImgr2(Imgr1.GoodsReceiptNoteNo)">
                 <p style="font-size:0.8em;">Customer&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.CustomerCode" style="font-size:1.2em;"></span></p>
                 <p style="font-size:0.8em;">GRN&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.GoodsReceiptNoteNo" style="font-size:1.3em;"></span></p>
                 <p style="font-size:0.8em;">Receipt Date&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="showDate(Imgr1.ReceiptDate)" style="font-size:1.1em;"></span></p>
@@ -48,4 +57,14 @@
             </ion-item>
         </ion-list>
     </ion-content>
+    <ion-footer-bar class="bar-positive hide-on-keyboard-open" ng-if="Imgr2s.length > 0">
+        <div class="button-bar">
+            <button class="button icon ion-android-done" ng-click="checkConfirm()">
+                &nbsp;Confirm
+            </button>
+            <button class="button icon ion-arrow-return-right" ng-click="clear()">
+                &nbsp;Cancel
+            </button>
+        </div>
+    </ion-footer-bar>
 </ion-view>

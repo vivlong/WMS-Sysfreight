@@ -5,10 +5,12 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
         $scope.Rcbp1 = {};
         $scope.GrnNo = {};
         $scope.Imgr1s = {};
+        $scope.Imgr2s = {};
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
             ApiService.GetParam( strUri, false ).then( function success( result ) {
                 $scope.Rcbp1s = result.data.results;
+                $( '#div-grt-list' ).focus();
             } );
         };
         $scope.refreshGrnNos = function( Grn ) {
@@ -21,15 +23,13 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
             var strUri = '/api/wms/imgr1?StatusCode=EXE&CustomerCode=' + Customer;
             ApiService.GetParam( strUri, true ).then( function success( result ) {
                 $scope.Imgr1s = result.data.results;
-                if ( window.cordova && window.cordova.plugins.Keyboard ) {
-                    cordova.plugins.Keyboard.close();
-                }
                 $( '#div-grt-list' ).focus();
             } );
         };
         $scope.showDate = function( utc ) {
             return moment( utc ).format( 'DD-MMM-YYYY' );
         };
+        /*
         $scope.GoToDetail = function( Imgr1 ) {
             if ( Imgr1 != null ) {
                 $state.go( 'putawayDetail', {
@@ -41,11 +41,24 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
                 } );
             }
         };
+        */
+        $scope.ShowImgr2 = function( GoodsReceiptNoteNo ) {
+            var strUri = '/api/wms/imgr2/putaway?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
+            ApiService.GetParam( strUri, true ).then( function success( result ) {
+                $scope.Imgr1s = {};
+                $scope.Imgr2s = result.data.results;
+                $( '#div-grt-list' ).focus();
+            } );
+        };
         $scope.returnMain = function() {
             $state.go( 'index.main', {}, {
                 reload: true
             } );
         };
+        $scope.clear = function(){
+            $scope.Imgr1s = {};
+            $scope.Imgr2s = {};
+        }
         $( '#div-list-rcbp' ).on( 'focus', ( function() {
             if ( window.cordova && window.cordova.plugins.Keyboard ) {
                 cordova.plugins.Keyboard.close();
