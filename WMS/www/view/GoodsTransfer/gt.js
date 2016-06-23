@@ -1,3 +1,171 @@
+appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$ionicPopup', '$ionicLoading', 'ApiService',
+    function( $scope, $stateParams, $state, $timeout, $ionicPopup, $ionicLoading, ApiService ) {
+        var alertPopup = null;
+        var alertPopupTitle = '';
+        $scope.Rcbp1 = {};
+        $scope.GrnNo = {};
+        $scope.Imgr1s = {};
+        $scope.Imgr2s = {};
+        var showPopup = function( title, type, callback ){
+            if (alertPopup === null) {
+                alertPopup = $ionicPopup.alert( {
+                    title: title,
+                    okType: 'button-' + type
+                } );
+                alertPopup.then(function(res){
+                    if( typeof(callback) == 'function') callback();
+                });
+            } else {
+                alertPopup.close();
+                alertPopup = null;
+            }
+        };
+        $scope.refreshRcbp1 = function( BusinessPartyName ) {
+            if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
+                var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                    $scope.Rcbp1s = result.data.results;
+                } );
+            }
+        };
+        $scope.refreshGrnNos = function( Grn ) {
+            if(is.not.undefined(Grn) && is.not.empty(Grn)){
+                var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + Grn;
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                    $scope.GrnNos = result.data.results;
+                } );
+            }
+        };
+        $scope.ShowImgr1 = function( Customer ) {
+            if(is.not.undefined(Customer) && is.not.empty(Customer)){
+                var strUri = '/api/wms/imgr1?StatusCode=EXE&CustomerCode=' + Customer;
+                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    $scope.Imgr1s = result.data.results;
+                } );
+            }else{
+                $scope.clear();
+            }
+        };
+        $scope.showDate = function( utc ) {
+            return moment( utc ).format( 'DD-MMM-YYYY' );
+        };
+        /*
+        $scope.GoToDetail = function( Imgr1 ) {
+            if ( Imgr1 != null ) {
+                $state.go( 'putawayDetail', {
+                    'CustomerCode': Imgr1.CustomerCode,
+                    'TrxNo': Imgr1.TrxNo,
+                    'GoodsReceiptNoteNo': Imgr1.GoodsReceiptNoteNo
+                }, {
+                    reload: true
+                } );
+            }
+        };
+        */
+        $scope.GoToImgr2= function( GoodsReceiptNoteNo ){
+            if(is.not.undefined(GoodsReceiptNoteNo) && is.not.empty(GoodsReceiptNoteNo)){
+                var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                    $scope.GrnNos = result.data.results;
+                    $scope.GrnNo.selected = $scope.GrnNos[0];
+                    $scope.ShowImgr2(GoodsReceiptNoteNo);
+                } );
+            }
+        };
+        $scope.ShowImgr2 = function( GoodsReceiptNoteNo ) {
+            if(is.not.undefined(GoodsReceiptNoteNo) && is.not.empty(GoodsReceiptNoteNo)){
+                var strUri = '/api/wms/imgr2/transfer?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
+                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    $scope.Imgr1s = {};
+                    $scope.Imgr2s = result.data.results;
+                    $( '#div-grt-list' ).focus();
+                } );
+            }else{
+                $scope.clear();
+            }
+        };
+        $scope.returnMain = function() {
+            $state.go( 'index.main', {}, {
+                reload: true
+            } );
+        };
+        $scope.clear = function(){
+            $scope.Imgr1s = {};
+            $scope.Imgr2s = {};
+        };
+        $scope.openCam = function( imgr2 ) {
+            $cordovaBarcodeScanner.scan().then( function( imageData ) {
+                $scope.Imgr2s[imgr2.LineItemNo-1].StoreNo = imageData.text;
+                $( '#txt-storeno-' + imgr2.LineItemNo).select();
+            }, function( error ) {
+                $cordovaToast.showShortBottom( error );
+            } );
+        };
+        $scope.clearInput = function( type, imgr2 ) {
+            if(is.equal(type,'qty')){
+                $scope.Imgr2s[imgr2.LineItemNo-1].Qty = 0;
+                $( '#txt-qty-' + imgr2.LineItemNo).select();
+            } else {
+                $scope.Imgr2s[imgr2.LineItemNo-1].NewStoreNo = '';
+                $( '#txt-storeno-' + imgr2.LineItemNo).select();
+            }
+        };
+        $scope.checkQty = function(imgr2){
+            if(imgr2.Balance - imgr2.Qty < 0){
+                showPopup('Balance can not be nagative','assertive', function(){
+                    $( '#txt-qty-' + imgr2.LineItemNo).select();
+                });
+            }
+        };
+        $scope.checkConfirm = function() {
+            var blnConfirm = false;
+            for ( var i = 0; i < $scope.Imgr2s.length; i++ ) {
+                if ( $scope.Imgr2s[i].Qty > 0 && is.not.empty($scope.Imgr2s[i].NewStoreNo) ) {
+                    blnConfirm = true;
+                    break;
+                }
+            }
+            if(blnConfirm){
+                var strUri = '/api/wms/imit1/create?UserID=' + sessionStorage.getItem( 'UserId').toString();
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                    var imit1 = result.data.results[0];
+                    var len = $scope.Imgr2s.length;
+                    if ( imit1.TrxNo > 0 && len > 0 ) {
+                        $ionicLoading.show();
+                        var LineItemNo = 0;
+                        for ( var i = 0; i < len; i++ ) {
+                            var imgr2 = {
+                                TrxNo : $scope.Imgr2s[i].TrxNo,
+                                LineItemNo : $scope.Imgr2s[i].LineItemNo,
+                                Qty : $scope.Imgr2s[i].Qty,
+                                NewStoreNo : $scope.Imgr2s[i].NewStoreNo
+                            };
+                            if ( imgr2.Qty > 0 && is.not.empty(imgr2.NewStoreNo) ) {
+                                LineItemNo = LineItemNo + 1;
+                                var strUri = '/api/wms/imit2/create?TrxNo=' + imit1.TrxNo + '&LineItemNo=' + LineItemNo + '&Imgr2TrxNo=' + imgr2.TrxNo + '&Imgr2LineItemNo=' + imgr2.LineItemNo + ' &NewStoreNo=' + imgr2.NewStoreNo + ' &Qty=' + imgr2.Qty + ' &UpdateBy=' + sessionStorage.getItem( 'UserId').toString();
+                                ApiService.GetParam( strUri, false ).then( function success( result ) {
+
+                                } );
+                            }
+                        }
+                        $ionicLoading.hide();
+                        var strUri = '/api/wms/imit1/confirm?TrxNo=' + imit1.TrxNo + '&UpdateBy=' + sessionStorage.getItem( 'UserId').toString();
+                        ApiService.GetParam( strUri, false ).then( function success( result ) {
+                            showPopup('Comfirm success','calm', function(){
+                                $scope.clear();
+                                $scope.returnMain();
+                            });
+                        },function error(){
+                            showPopup('Comfirm failed','assertive');
+                        });
+                    }
+                } );
+            } else {
+                showPopup('No Product Transfered','assertive');
+            }
+        };
+    } ] );
+
 appControllers.controller( 'GtFromCtrl', [ '$scope', '$stateParams', '$state', '$http', '$timeout', '$ionicHistory', '$ionicLoading', '$ionicPopup', '$ionicModal', '$cordovaToast', '$cordovaBarcodeScanner', 'ApiService',
     function( $scope, $stateParams, $state, $http, $timeout, $ionicHistory, $ionicLoading, $ionicPopup, $ionicModal, $cordovaToast, $cordovaBarcodeScanner, ApiService ) {
         var alertPopup = null;
