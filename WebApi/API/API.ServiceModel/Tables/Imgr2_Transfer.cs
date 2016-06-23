@@ -7,16 +7,14 @@ namespace WebApi.ServiceModel.Tables
 {
 				public class Imgr2_Transfer
     {
-        public int TrxNo { get; set; }
+								public int TrxNo { get; set; }
 								public int LineItemNo { get; set; }
 								public string StoreNo { get; set; }
-        public int ProductTrxNo { get; set; }
+								public string StagingAreaFlag { get; set; }
 								public string ProductCode { get; set; }
 								public string ProductDescription { get; set; }
-								public string SerialNoFlag { get; set; }
-        public string DimensionFlag { get; set; }
-        public int PackingQty { get; set; }
-        public int WholeQty { get; set; }
-        public int LooseQty { get; set; }
+								public int Balance { get; set; }
+								public int Qty { get; set; }
+								public string NewStoreNo { get; set; }
     }
 }

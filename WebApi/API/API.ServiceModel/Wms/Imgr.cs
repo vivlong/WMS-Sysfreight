@@ -15,7 +15,7 @@ namespace WebApi.ServiceModel.Wms
 				[Route("/wms/imgr2/receipt", "Get")]				//receipt?GoodsReceiptNoteNo=
 				[Route("/wms/imgr2/putaway", "Get")]				//putaway?GoodsReceiptNoteNo=
 				[Route("/wms/imgr2/putaway/update", "Get")]				//update?StoreNo= & TrxNo= & LineItemNo=
-				[Route("/wms/imgr2/transfer", "Get")]			//transfer?TrxNo= & LineItemNo=
+				[Route("/wms/imgr2/transfer", "Get")]			//transfer?GoodsReceiptNoteNo=
     public class Imgr : IReturn<CommonResponse>
     {
         public string CustomerCode { get; set; }
@@ -149,10 +149,14 @@ namespace WebApi.ServiceModel.Wms
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
 																{
-																				string strSql = "Select Imgr2.*, " +
-																								"(Select Top 1 SerialNoFlag From Impr1 Where TrxNo=Imgr2.ProductTrxNo) AS SerialNoFlag " +
+																				string strSql = "Select Imgr2.TrxNo, Imgr2.LineItemNo, IsNull(Imgr2.StoreNo,'') AS StoreNo," +
+																								"(Select StagingAreaFlag From Whwh2 Where WarehouseCode=Imgr2.WarehouseCode And StoreNo=Imgr2.StoreNo) AS StagingAreaFlag," +
+																								"IsNull(Imgr2.ProductCode,'') AS ProductCode, IsNull(Imgr2.ProductDescription,'') AS ProductDescription," +
+																								"(Case Imgr2.DimensionFlag When '1' Then Imgr2.PackingQty When '2' Then Imgr2.WholeQty Else Imgr2.LooseQty End) AS Balance," +
+																								"0 AS Qty, '' AS NewStoreNo " +
 																								"From Imgr2 " +
-																								"Where Imgr2.TrxNo=" + int.Parse(request.TrxNo) + " And Imgr2.LineItemNo=" + int.Parse(request.LineItemNo);
+																								"Left Join Imgr1 On Imgr2.TrxNo = Imgr1.TrxNo " +
+																								"Where Imgr1.GoodsReceiptNoteNo='" + request.GoodsReceiptNoteNo + "'";
 																				Result = db.Select<Imgr2_Transfer>(strSql);
 																}
 												}
