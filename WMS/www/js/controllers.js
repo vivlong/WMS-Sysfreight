@@ -248,7 +248,7 @@ appControllers.controller( 'MainCtrl', [ '$scope', '$state', '$ionicPopup',
             } );
         };
         $scope.func_GT = function() {
-            $state.go( 'gtFrom', {}, {
+            $state.go( 'gtList', {}, {
                 reload: true
             } );
         };

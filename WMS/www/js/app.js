@@ -241,6 +241,7 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
             } )
             .state( 'putawayList', {
                 url: '/putaway/list',
+                cache: 'false',
                 templateUrl: 'view/Putaway/list.html',
                 controller: 'PutawayListCtrl'
             } )
@@ -255,18 +256,6 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                 cache: 'false',
                 templateUrl: 'view/GoodsTransfer/list.html',
                 controller: 'GtListCtrl'
-            } )
-            .state( 'gtFrom', {
-                url: '/gt/from',
-                cache: 'false',
-                templateUrl: 'view/GoodsTransfer/from.html',
-                controller: 'GtFromCtrl'
-            } )
-            .state( 'gtTo', {
-                url: '/gt/to',
-                cache: 'false',
-                templateUrl: 'view/GoodsTransfer/to.html',
-                controller: 'GtToCtrl'
             } );
         $urlRouterProvider.otherwise( '/login' );
     } ] );

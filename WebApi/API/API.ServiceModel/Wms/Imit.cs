@@ -12,7 +12,7 @@ namespace WebApi.ServiceModel.Wms
 {
 				[Route("/wms/imit1/create", "Get")]					//create?UserID=
 				[Route("/wms/imit1/confirm", "Get")]				//confirm?TrxNo= &UpdateBy=
-				[Route("/wms/imit2/create", "Get")]					//create?TrxNo= &Imgr2LineItemNo= &Imgr2TrxNo= &Imgr2LineItemNo= &NewStoreNo= &Qty= &UpdateBy= 
+				[Route("/wms/imit2/create", "Get")]					//create?TrxNo= &LineItemNo= &Imgr2TrxNo= &Imgr2LineItemNo= &NewStoreNo= &Qty= &UpdateBy= 
 				public class Imit : IReturn<CommonResponse>
     {
 								public string UserID { get; set; }
@@ -67,13 +67,8 @@ namespace WebApi.ServiceModel.Wms
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
 																{
-																				string strSql = "EXEC spi_Imit_Confirm @TrxNo,@UpdateBy";
-																				Result = db.SqlScalar<int>(strSql,
-																								new
-																								{																												
-																												TrxNo = int.Parse(request.TrxNo),
-																												UpdateBy = request.UserID
-																								});
+																				string strSql = "EXEC spi_Imit_Confirm " + int.Parse(request.TrxNo) + ",'" + request.UserID + "'";
+																				Result = db.SqlScalar<int>(strSql);
 																}
 												}
 												catch { throw; }
@@ -100,9 +95,8 @@ namespace WebApi.ServiceModel.Wms
 																																				{
 																																								TrxNo = int.Parse(request.TrxNo),
 																																								LineItemNo = int.Parse(request.LineItemNo),
-																																								NewStoreNo = request.NewStoreNo,
-																																								UpdateBy = request.UpdateBy,
 																																								MovementTrxNo = imgr2s[0].MovementTrxNo,
+																																								NewStoreNo = request.NewStoreNo,
 																																								NewWarehouseCode = imgr2s[0].WarehouseCode,
 																																								StoreNo = imgr2s[0].StoreNo,
 																																								WarehouseCode = imgr2s[0].WarehouseCode,
@@ -110,7 +104,8 @@ namespace WebApi.ServiceModel.Wms
 																																								PackingQty = int.Parse(request.Qty),
 																																								Volume = imgr2s[0].Volume,
 																																								Weight = imgr2s[0].Weight,
-																																								SpaceArea = imgr2s[0].SpaceArea
+																																								SpaceArea = imgr2s[0].SpaceArea,
+																																								UpdateBy = request.UpdateBy
 																																				}
 																																);
 																																break;

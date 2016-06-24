@@ -13,8 +13,6 @@ namespace WebApi.ServiceModel.Tables
 				{
 								public int TrxNo { get; set; }
 								public int LineItemNo { get; set; }
-								public DateTime ExpiryDate { get; set; }
-								public DateTime ManufactureDate { get; set; }
 								public int MovementTrxNo { get; set; }
 								public string NewStoreNo { get; set; }
 								public string NewWarehouseCode { get; set; }

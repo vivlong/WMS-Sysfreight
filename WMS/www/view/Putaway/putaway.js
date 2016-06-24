@@ -1,35 +1,61 @@
-appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state', '$ionicPopup', 'ApiService',
-    function( $scope, $stateParams, $state, $ionicPopup, ApiService ) {
+appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$ionicPopup', '$ionicLoading', 'ApiService',
+    function( $scope, $stateParams, $state, $timeout, $ionicPopup, $ionicLoading, ApiService ) {
         var alertPopup = null;
         var alertPopupTitle = '';
         $scope.Rcbp1 = {};
         $scope.GrnNo = {};
         $scope.Imgr1s = {};
-        $scope.refreshRcbp1 = function( BusinessPartyName ) {
-            var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-            ApiService.GetParam( strUri, false ).then( function success( result ) {
-                $scope.Rcbp1s = result.data.results;
+        $scope.Imgr2s = {};
+        var confirm = function() {
+            $ionicLoading.show();
+            for ( var i = 0; i < $scope.Imgr2s.length; i++ ) {
+                var imgr2 = $scope.Imgr2s[i];
+                var strUri = '/api/wms/imgr2/putaway/update?StoreNo=' + imgr2.StoreNo + '&TrxNo=' + imgr2.TrxNo + '&LineItemNo=' + imgr2.LineItemNo;
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+
+                } );
+            }
+            $ionicLoading.hide();
+            var alertPopup = $ionicPopup.alert( {
+                title: 'Comfirm success.',
+                okType: 'button-calm'
             } );
+            $timeout( function() {
+                alertPopup.close();
+                $scope.clear();
+                $scope.returnMain();
+            }, 2500 );
+        };
+        $scope.refreshRcbp1 = function( BusinessPartyName ) {
+            if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
+                var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                    $scope.Rcbp1s = result.data.results;
+                } );
+            }
         };
         $scope.refreshGrnNos = function( Grn ) {
-            var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + Grn;
-            ApiService.GetParam( strUri, false ).then( function success( result ) {
-                $scope.GrnNos = result.data.results;
-            } );
+            if(is.not.undefined(Grn) && is.not.empty(Grn)){
+                var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + Grn;
+                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                    $scope.GrnNos = result.data.results;
+                } );
+            }
         };
         $scope.ShowImgr1 = function( Customer ) {
-            var strUri = '/api/wms/imgr1?StatusCode=EXE&CustomerCode=' + Customer;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
-                $scope.Imgr1s = result.data.results;
-                if ( window.cordova && window.cordova.plugins.Keyboard ) {
-                    cordova.plugins.Keyboard.close();
-                }
-                $( '#div-grt-list' ).focus();
-            } );
+            if(is.not.undefined(Customer) && is.not.empty(Customer)){
+                var strUri = '/api/wms/imgr1?StatusCode=EXE&CustomerCode=' + Customer;
+                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    $scope.Imgr1s = result.data.results;
+                } );
+            }else{
+                $scope.clear();
+            }
         };
         $scope.showDate = function( utc ) {
             return moment( utc ).format( 'DD-MMM-YYYY' );
         };
+        /*
         $scope.GoToDetail = function( Imgr1 ) {
             if ( Imgr1 != null ) {
                 $state.go( 'putawayDetail', {
@@ -41,17 +67,66 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
                 } );
             }
         };
+        */
+        $scope.ShowImgr2 = function( GoodsReceiptNoteNo ) {
+            if(is.not.undefined(GoodsReceiptNoteNo) && is.not.empty(GoodsReceiptNoteNo)){
+                var strUri = '/api/wms/imgr2/putaway?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
+                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    $scope.Imgr1s = {};
+                    $scope.Imgr2s = result.data.results;
+                    $( '#div-grt-list' ).focus();
+                } );
+            }else{
+                $scope.clear();
+            }
+        };
         $scope.returnMain = function() {
             $state.go( 'index.main', {}, {
                 reload: true
             } );
         };
-        $( '#div-list-rcbp' ).on( 'focus', ( function() {
-            if ( window.cordova && window.cordova.plugins.Keyboard ) {
-                cordova.plugins.Keyboard.close();
+        $scope.clear = function(){
+            $scope.Imgr1s = {};
+            $scope.Imgr2s = {};
+        };
+        $scope.openCam = function( imgr2 ) {
+            $cordovaBarcodeScanner.scan().then( function( imageData ) {
+                $scope.Imgr2s[imgr2.LineItemNo-1].StoreNo = imageData.text;
+                $( '#txt-storeno-' + imgr2.LineItemNo).select();
+            }, function( error ) {
+                $cordovaToast.showShortBottom( error );
+            } );
+        };
+        $scope.clearInput = function( imgr2 ) {
+            $scope.Imgr2s[imgr2.LineItemNo-1].StoreNo = '';
+            $( '#txt-storeno-' + imgr2.LineItemNo).select();
+        };
+        $scope.checkConfirm = function() {
+            $ionicLoading.show();
+            var blnDiscrepancies = false;
+            for ( var i = 0; i < $scope.Imgr2s.length; i++ ) {
+                var imgr2 = {
+                    TrxNo : $scope.Imgr2s[i].TrxNo,
+                    LineItemNo : $scope.Imgr2s[i].LineItemNo,
+                    ProductCode : $scope.Imgr2s[i].ProductCode,
+                    StoreNo : $scope.Imgr2s[i].StoreNo
+                };
+                if ( is.empty(imgr2.StoreNo) ) {
+                    console.log( 'Product (' + imgr2.ProductCode + ') has no Store No to putaway' );
+                    blnDiscrepancies = true;
+                    break;
+                }
             }
-        } ) );
-        $( '#div-list-rcbp' ).focus();
+            if ( blnDiscrepancies ) {
+                $ionicLoading.hide();
+                var alertPopup = $ionicPopup.alert( {
+                    title: 'some products has not yet putaway',
+                    okType: 'button-assertive'
+                } );
+            } else {
+                confirm();
+            }
+        };
     } ] );
 
 appControllers.controller( 'PutawayDetailCtrl', [ '$scope', '$stateParams', '$state', '$timeout', '$ionicHistory', '$ionicLoading', '$ionicPopup', '$ionicModal', '$cordovaToast', '$cordovaBarcodeScanner', 'ApiService',
