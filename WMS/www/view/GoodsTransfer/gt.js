@@ -111,10 +111,16 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
             }
         };
         $scope.checkQty = function(imgr2){
-            if(imgr2.Balance - imgr2.Qty < 0){
-                showPopup('Balance can not be nagative','assertive', function(){
-                    $( '#txt-qty-' + imgr2.LineItemNo).select();
-                });
+            if(imgr2.Qty < 0){
+                $scope.Imgr2s[imgr2.LineItemNo-1].Qty = 0;
+            }else{
+                if(imgr2.Balance - imgr2.Qty < 0){
+                    $scope.Imgr2s[imgr2.LineItemNo-1].Qty = $scope.Imgr2s[imgr2.LineItemNo-1].Balance;
+                    //$scope.Imgr2s[imgr2.LineItemNo-1].Balance = 0;
+                    /*showPopup('Balance can not be nagative','assertive', function(){
+                        $( '#txt-qty-' + imgr2.LineItemNo).select();
+                    });*/
+                }
             }
         };
         $scope.checkConfirm = function() {
