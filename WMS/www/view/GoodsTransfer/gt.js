@@ -1,5 +1,5 @@
-appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$ionicPopup', '$ionicLoading', 'ApiService',
-    function( $scope, $stateParams, $state, $timeout, $ionicPopup, $ionicLoading, ApiService ) {
+appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$ionicPopup', '$ionicLoading', '$cordovaBarcodeScanner', 'ApiService',
+    function( $scope, $stateParams, $state, $timeout, $ionicPopup, $ionicLoading, $cordovaBarcodeScanner, ApiService ) {
         var alertPopup = null;
         var alertPopupTitle = '';
         $scope.Rcbp1 = {};
