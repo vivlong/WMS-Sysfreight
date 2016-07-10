@@ -6,20 +6,22 @@ appControllers.controller( 'VginListCtrl', [ '$scope', '$stateParams', '$state',
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
                 var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
                 } );
             }
         };
         $scope.refreshGinNos = function( Grn ) {
-            var strUri = '/api/wms/imgi1?GoodsIssueNoteNo=' + Grn;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
-                $scope.GinNos = result.data.results;
-            } );
+            if(is.not.undefined(Grn) && is.not.empty(Grn)){
+                var strUri = '/api/wms/imgi1?GoodsIssueNoteNo=' + Grn;
+                ApiService.Get( strUri, true ).then( function success( result ) {
+                    $scope.GinNos = result.data.results;
+                } );
+            }
         };
         $scope.ShowImgi1 = function( Customer ) {
             var strUri = '/api/wms/imgi1?CustomerCode=' + Customer;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            ApiService.Get( strUri, true ).then( function success( result ) {
                 $scope.imgi1s = result.data.results;
                 if ( window.cordova && window.cordova.plugins.Keyboard ) {
                     cordova.plugins.Keyboard.close();
@@ -197,7 +199,7 @@ appControllers.controller( 'VginDetailCtrl', [ '$scope', '$stateParams', '$state
         };
         var GetImgi2 = function( GoodsIssueNoteNo ) {
             var strUri = '/api/wms/imgi2/verify?GoodsIssueNoteNo=' + GoodsIssueNoteNo;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            ApiService.Get( strUri, true ).then( function success( result ) {
                 $scope.Detail.Imgi2s = result.data.results;
                 db_del_Imgi2_Verify();
                 if ( is.array($scope.Detail.Imgi2s) && is.not.empty($scope.Detail.Imgi2s)) {
@@ -220,7 +222,7 @@ appControllers.controller( 'VginDetailCtrl', [ '$scope', '$stateParams', '$state
         GetImgi2( $scope.Detail.GIN );
         // var GetImsn1 = function( GoodsIssueNoteNo ) {
         //     var strUri = '/api/wms/imsn1?IssueNoteNo=' + GoodsIssueNoteNo;
-        //     ApiService.GetParam( strUri, true ).then( function success( result ) {
+        //     ApiService.Get( strUri, true ).then( function success( result ) {
         //         $scope.Detail.Imsn1s = result.data.results;
         //         db_del_Imsn1_Verify();
         //         if ( is.array($scope.Detail.Imsn1s) && is.not.empty($scope.Detail.Imsn1s)) {

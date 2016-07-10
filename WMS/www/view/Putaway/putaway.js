@@ -11,7 +11,7 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
             for ( var i = 0; i < $scope.Imgr2s.length; i++ ) {
                 var imgr2 = $scope.Imgr2s[i];
                 var strUri = '/api/wms/imgr2/putaway/update?StoreNo=' + imgr2.StoreNo + '&TrxNo=' + imgr2.TrxNo + '&LineItemNo=' + imgr2.LineItemNo;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
 
                 } );
             }
@@ -29,7 +29,7 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
                 var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
                 } );
             }
@@ -37,7 +37,7 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
         $scope.refreshGrnNos = function( Grn ) {
             if(is.not.undefined(Grn) && is.not.empty(Grn)){
                 var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + Grn;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
                 } );
             }
@@ -45,7 +45,7 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
         $scope.ShowImgr1 = function( Customer ) {
             if(is.not.undefined(Customer) && is.not.empty(Customer)){
                 var strUri = '/api/wms/imgr1?StatusCode=EXE&CustomerCode=' + Customer;
-                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                ApiService.Get( strUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;
                 } );
             }else{
@@ -71,7 +71,7 @@ appControllers.controller( 'PutawayListCtrl', ['$scope', '$stateParams', '$state
         $scope.ShowImgr2 = function( GoodsReceiptNoteNo ) {
             if(is.not.undefined(GoodsReceiptNoteNo) && is.not.empty(GoodsReceiptNoteNo)){
                 var strUri = '/api/wms/imgr2/putaway?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
-                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                ApiService.Get( strUri, true ).then( function success( result ) {
                     $scope.Imgr1s = {};
                     $scope.Imgr2s = result.data.results;
                     $( '#div-grt-list' ).focus();
@@ -252,7 +252,7 @@ appControllers.controller( 'PutawayDetailCtrl', [ '$scope', '$stateParams', '$st
                         if ( len > 0 ) {
                             for ( var i = 0; i < len; i++ ) {
                                 var strUri = '/api/wms/imgr2/putaway/update?StoreNo=' + results.rows.item( i ).StoreNo + '&TrxNo=' + results.rows.item( i ).TrxNo + '&LineItemNo=' + results.rows.item( i ).LineItemNo;
-                                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                                ApiService.Get( strUri, false ).then( function success( result ) {
 
                                 } );
                             }
@@ -285,7 +285,7 @@ appControllers.controller( 'PutawayDetailCtrl', [ '$scope', '$stateParams', '$st
         }
         var GetImgr2s = function( GoodsReceiptNoteNo ) {
             var strUri = '/api/wms/imgr2/putaway?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            ApiService.Get( strUri, true ).then( function success( result ) {
                 $scope.Detail.Imgr2s = result.data.results;
                 db_del_Imgr2_Putaway();
                 arrStoreNo = new Array();

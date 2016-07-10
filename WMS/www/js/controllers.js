@@ -1,22 +1,15 @@
 var appControllers = angular.module( 'WMSAPP.controllers', [
     'ionic',
-    'ngCordova.plugins.dialogs',
-    'ngCordova.plugins.toast',
-    'ngCordova.plugins.appVersion',
-    'ngCordova.plugins.file',
-    'ngCordova.plugins.fileTransfer',
-    'ngCordova.plugins.fileOpener2',
-    'ngCordova.plugins.datePicker',
-    'ngCordova.plugins.barcodeScanner',
-    'ngCordova.plugins.keyboard',
+    'ngCordova',
     'ui.select',
     'WMSAPP.config',
-    'WMSAPP.services'
+    'WMSAPP.services',
+    'WMSAPP.factories'
 ] );
 
 appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state', '$http',
-    '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion',
-    function( ENV, $rootScope, $scope, $state, $http, $ionicPopup, $ionicSideMenuDelegate, $cordovaAppVersion ) {
+    '$ionicPlatform', '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion', 'ApiService',
+    function( ENV, $rootScope, $scope, $state, $http, $ionicPlatform, $ionicPopup, $ionicSideMenuDelegate, $cordovaAppVersion, ApiService ) {
         var alertPopup = null;
         var alertPopupTitle = '';
         $scope.Status = {
@@ -74,6 +67,71 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
         $rootScope.$on( 'login', function() {
             $scope.Status.Login = true;
         } );
+        //
+        var writeFile = function ( path, file, data ) {
+            $cordovaFile.writeFile( path, file, data, true )
+                .then( function ( success ) {
+                    ApiService.Init();
+                }, function ( error ) {
+                    $cordovaToast.showShortBottom( error );
+                    console.error( error );
+                } );
+        };
+        $ionicPlatform.ready( function () {
+            console.log( 'ionicPlatform.ready' );
+            if ( !ENV.fromWeb ) {
+                var data = 'website=' + ENV.website + '##' +
+                    'api=' + ENV.api + '##' +
+                    'port=' + ENV.port;
+                var path = cordova.file.externalRootDirectory,
+                    directory = ENV.rootPath,
+                    file = ENV.rootPath + '/' + ENV.configFile;
+                $cordovaFile.createDir( path, directory, false )
+                    .then( function ( success ) {
+                        writeFile( path, file, data );
+                    }, function ( error ) {
+                        // If an existing directory exists
+                        $cordovaFile.checkFile( path, file )
+                            .then( function ( success ) {
+                                $cordovaFile.readAsText( path, file )
+                                    .then( function ( success ) {
+                                        var arConf = success.split( '##' );
+                                        if ( arConf.length == 3 ) {
+                                            var arWebServiceURL = arConf[ 0 ].split( '=' );
+                                            if ( is.not.empty( arWebServiceURL[ 1 ] ) ) {
+                                                ENV.website = arWebServiceURL[ 1 ];
+                                            }
+                                            var arWebSiteURL = arConf[ 1 ].split( '=' );
+                                            if ( is.not.empty( arWebSiteURL[ 1 ] ) ) {
+                                                ENV.api = arWebSiteURL[ 1 ];
+                                            }
+                                            var arWebPort = arConf[ 2 ].split( '=' );
+                                            if ( is.not.empty( arWebPort[ 1 ] ) ) {
+                                                ENV.port = arWebPort[ 1 ];
+                                            }
+                                            ApiService.Init();
+                                        } else {
+                                            $cordovaFile.removeFile( path, file )
+                                                .then( function ( success ) {
+                                                    writeFile( path, file, data );
+                                                }, function ( error ) {
+                                                    $cordovaToast.showShortBottom( error );
+                                                } );
+                                        }
+                                    }, function ( error ) {
+                                        $cordovaToast.showShortBottom( error );
+                                        console.error( error );
+                                    } );
+                            }, function ( error ) {
+                                // If file not exists
+                                writeFile( path, file, data );
+                            } );
+                    } );
+            } else {
+                ENV.ssl = 'https:' === document.location.protocol ? true : false;
+                ApiService.Init();
+            }
+        } );
     }
 ] );
 
@@ -83,7 +141,7 @@ appControllers.controller( 'SplashCtrl', [ '$state', '$timeout',
             $state.go( 'index.login', {}, {
                 reload: true
             } );
-        }, 2500 );
+        }, 2000 );
     } ] );
 
 appControllers.controller( 'LoginCtrl', [ '$rootScope', '$scope', '$state', '$stateParams', '$ionicPopup', '$timeout', 'ApiService',
@@ -131,8 +189,10 @@ appControllers.controller( 'LoginCtrl', [ '$rootScope', '$scope', '$state', '$st
                 return;
             }
             */
-            var strUri = '/api/wms/login/check?UserId=' + $scope.logininfo.strUserName + '&Password=' + hex_md5( $scope.logininfo.strPassword );
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            var objUri = ApiService.Uri('/api/wms/login/check');
+            objUri.addSearch('UserId',$scope.logininfo.strUserName);
+            objUri.addSearch('Password',hex_md5( $scope.logininfo.strPassword ));
+            ApiService.Get( objUri, true ).then( function success( result ) {
                 $rootScope.$broadcast( 'login' );
                 sessionStorage.clear();
                 sessionStorage.setItem( 'UserId', $scope.logininfo.strUserName );
@@ -147,8 +207,8 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
     function( ENV, $rootScope,  $scope, $state, $ionicHistory, $ionicPopup, $cordovaToast, $cordovaFile ) {
         $scope.Setting = {
             Version:    ENV.version,
-            WebApiURL:  rmProtocol(ENV.api),
-            WebSiteUrl: rmProtocol(ENV.website),
+            WebApiURL:  ENV.api,
+            WebSiteUrl: ENV.website,
             SSL:        { checked: ENV.ssl === '0' ? false : true },
             blnWeb:    ENV.fromWeb
         };
@@ -173,9 +233,7 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
                 $scope.Setting.WebSiteUrl = rmProtocol(ENV.website);
             }
             ENV.ssl = $scope.Setting.SSL.checked ? '1' : '0';
-            var blnSSL = $scope.Setting.SSL.checked ? true : false;
-            ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
-            ENV.api     = appendProtocol(ENV.api, blnSSL, ENV.port);
+            ApiService.Init();
             if ( !ENV.fromWeb ) {
                 var data = 'website=' + ENV.website + '##api=' + ENV.api + '##ssl=' + ENV.ssl;
                 var path = cordova.file.externalRootDirectory;
@@ -210,6 +268,7 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
                         //$cordovaToast.showShortBottom( error );
                     } );
             }
+            ApiService.Init();
         };
     } ] );
 
@@ -231,11 +290,16 @@ appControllers.controller( 'UpdateCtrl', [ 'ENV', '$scope', '$state', '$statePar
 
 appControllers.controller( 'MainCtrl', [ '$scope', '$state', '$ionicPopup',
     function( $scope, $state, $ionicPopup ) {
-        $scope.func_Dashboard = function() {
+        $scope.func_Enquiry = function() {
+            $state.go( 'enquiryList', {}, {
+                reload: true
+            } );
+            /*
             $ionicPopup.alert( {
                 title: 'Stay Tuned.',
                 okType: 'button-calm'
             } );
+            */
         };
         $scope.func_GR = function() {
             $state.go( 'grList', {}, {

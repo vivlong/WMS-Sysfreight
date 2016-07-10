@@ -8,7 +8,7 @@ appControllers.controller( 'GrListCtrl', [ 'ENV', '$scope', '$stateParams', '$st
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
                 var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
                 } );
             }
@@ -16,7 +16,7 @@ appControllers.controller( 'GrListCtrl', [ 'ENV', '$scope', '$stateParams', '$st
         $scope.refreshGrnNos = function( Grn ) {
             if(is.not.undefined(Grn) && is.not.empty(Grn)){
                 var strUri = '/api/wms/imgr1?GoodsReceiptNoteNo=' + Grn;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
                 } );
             }
@@ -24,7 +24,7 @@ appControllers.controller( 'GrListCtrl', [ 'ENV', '$scope', '$stateParams', '$st
         $scope.ShowImgr1 = function( Customer ) {
             if(is.not.undefined(Customer) && is.not.empty(Customer)){
                 var strUri = '/api/wms/imgr1?CustomerCode=' + Customer;
-                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                ApiService.Get( strUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;
                     if ( window.cordova && window.cordova.plugins.Keyboard ) {
                         cordova.plugins.Keyboard.close();
@@ -401,12 +401,12 @@ appControllers.controller( 'GrDetailCtrl', [ '$rootScope', '$scope', '$statePara
                     }
                     SerialNos = SerialNos.substr(1,SerialNos.length);
                     strUri = '/api/wms/imsn1/create?ReceiptNoteNo=' + $scope.Detail.GRN + '&ReceiptLineItemNo=' + imgr2.LineItemNo + '&SerialNos=' + SerialNos + '&Imgr2TrxNo=' + imgr2.TrxNo;
-                    ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    ApiService.Get( strUri, true ).then( function success( result ) {
                     } );
                 }
             });
             strUri = '/api/wms/imgr1/confirm?TrxNo=' + $scope.Detail.TrxNo + '&UserId=' + userID;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            ApiService.Get( strUri, true ).then( function success( result ) {
                 alertPopup = $ionicPopup.alert( {
                     title: 'Confirm success.',
                     okType: 'button-calm'
@@ -419,7 +419,7 @@ appControllers.controller( 'GrDetailCtrl', [ '$rootScope', '$scope', '$statePara
         };
         var GetImgr2ProductCode = function( GoodsReceiptNoteNo ) {
             var strUri = '/api/wms/imgr2/receipt?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            ApiService.Get( strUri, true ).then( function success( result ) {
                 $scope.Detail.Imgr2s = result.data.results;
                 db_del_Imgr2_Receipt();
                 db_del_Imsn1_Receipt();

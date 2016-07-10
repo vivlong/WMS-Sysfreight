@@ -3,93 +3,31 @@ var app = angular.module( 'WMSAPP', [
     'ionic',
     'jett.ionic.filter.bar',
     'ionic-datepicker',
-    'ngCordova.plugins.toast',
-    'ngCordova.plugins.file',
-    'ngCordova.plugins.keyboard',
+    'ngCordova',
     'WMSAPP.config',
-    //'WMSAPP.factories',
+    'WMSAPP.factories',
     'WMSAPP.services',
     'WMSAPP.controllers'
 ] );
-app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicPopup', '$ionicHistory', '$ionicLoading', '$cordovaKeyboard', '$cordovaToast', '$cordovaFile',
-    function( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicPopup, $ionicHistory, $ionicLoading, $cordovaKeyboard, $cordovaToast, $cordovaFile ) {
-        $ionicPlatform.ready( function() {
-            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-            // for form inputs)
-            if ( window.cordova ) {
-                ENV.fromWeb = false;
-                $cordovaKeyboard.hideAccessoryBar(true);
-                $cordovaKeyboard.disableScroll(true);
-                //
-                var data = 'website=' + ENV.website + '##api=' + ENV.api + '##ssl=' + ENV.ssl;
-                var path = cordova.file.externalRootDirectory;
-                var directory = ENV.rootPath;
-                var file = directory + '/' + ENV.configFile;
-                $cordovaFile.createDir( path, directory, false )
-                    .then( function( success ) {
-                        $cordovaFile.writeFile( path, file, data, true )
-                            .then( function( success ) {
-                                var blnSSL = ENV.ssl === 0 ? false : true;
-                                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
-                            }, function( error ) {
-                                $cordovaToast.showShortBottom( error );
-                            } );
-                    }, function( error ) { // If an existing directory exists
-                        $cordovaFile.checkFile( path, file )
-                            .then( function( success ) {
-                                $cordovaFile.readAsText( path, file )
-                                    .then( function( success ) {
-                                        var arConf = success.split( '##' );
-                                        if ( is.not.empty( arConf[ 0 ] ) ) {
-                                            var arWebServiceURL = arConf[ 0 ].split( '=' );
-                                            if ( is.not.empty( arWebServiceURL[ 1 ] ) ) {
-                                                ENV.website = arWebServiceURL[ 1 ];
-                                            }
-                                        }
-                                        if ( is.not.empty( arConf[ 1 ] ) ) {
-                                            var arWebSiteURL = arConf[ 1 ].split( '=' );
-                                            if ( is.not.empty( arWebSiteURL[ 1 ] ) ) {
-                                                ENV.api = arWebSiteURL[ 1 ];
-                                            }
-                                        }
-                                        if ( is.not.empty( arConf[ 2 ] ) ) {
-                                            var arSSL = arConf[ 2 ].split( '=' );
-                                            if ( is.not.empty( arSSL[ 1 ] ) ) {
-                                                ENV.ssl = arSSL[ 1 ];
-                                            }
-                                        }
-                                        var blnSSL = ENV.ssl === 0 ? false : true;
-                                        ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                                        ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
-                                        //
-                                    }, function( error ) {
-                                        $cordovaToast.showShortBottom( error );
-                                    } );
-                            }, function( error ) {
-                                // If file not exists
-                                $cordovaFile.writeFile( path, file, data, true )
-                                    .then( function( success ) {
-                                        var blnSSL = ENV.ssl === 0 ? false : true;
-                                        ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                                        ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
-                                    }, function( error ) {
-                                        $cordovaToast.showShortBottom( error );
-                                    } );
-                            } );
-                    } );
-            } else {
-                var blnSSL = 'https:' === document.location.protocol ? true : false;
-                ENV.ssl = blnSSL ? '1' : '0';
-                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicPopup', '$ionicHistory', '$ionicLoading', '$cordovaKeyboard', '$cordovaToast', '$cordovaFile', 'SqlService',
+    function ( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicPopup, $ionicHistory, $ionicLoading, $cordovaKeyboard, $cordovaToast, $cordovaFile, SqlService ) {
+        if ( window.cordova ) {
+            ENV.fromWeb = false;
+        } else {
+            ENV.fromWeb = true;
+        }
+        $ionicPlatform.ready( function () {
+            if ( !ENV.fromWeb ) {
+                $cordovaKeyboard.hideAccessoryBar( true );
+                $cordovaKeyboard.disableScroll( true );
             }
             if ( window.StatusBar ) {
                 // org.apache.cordova.statusbar required
                 StatusBar.styleDefault();
             }
+            SqlService.Init();
         } );
-        $ionicPlatform.registerBackButtonAction( function( e ) {
+        $ionicPlatform.registerBackButtonAction( function ( e ) {
             /*
             if ($cordovaKeyboard.isVisible()) {
                 $cordovaKeyboard.close();
@@ -102,60 +40,104 @@ app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeo
                 } else {
                     $rootScope.backButtonPressedOnceToExit = true;
                     $cordovaToast.showShortBottom( 'Press again to exit.' );
-                    setTimeout( function() {
+                    setTimeout( function () {
                         $rootScope.backButtonPressedOnceToExit = false;
                     }, 2000 );
                 }
             } else if (
+                $state.includes( 'enquiryList' ) ||
                 $state.includes( 'grDetail' ) ||
                 $state.includes( 'putawayDetail' ) ||
-                $state.includes( 'gtTo' ) ||
-                $state.includes( 'gtFrom' ) ||
+                $state.includes( 'gtList' ) ||
                 $state.includes( 'pickingDetail' ) ||
                 $state.includes( 'vginDetail' ) ) {
-                if ( $rootScope.backButtonPressedOnceToExit ) {
-                    if ( $ionicHistory.backView() ) {
-                        $ionicHistory.goBack();
-                    } else {
-                        if ( $state.includes( 'grDetail' ) ) {
-                            $state.go( 'grList', {} );
-                        } else if ( $state.includes( 'putawayDetail' ) ) {
-                            $state.go( 'putawayList', {} );
-                        } else if ( $state.includes( 'gtTo' ) ) {
-                            $state.go( 'gtFrom', {} );
-                        } else if ( $state.includes( 'gtFrom' ) ) {
-                            $state.go( 'index.main', {} );
-                        } else if ( $state.includes( 'pickingDetail' ) ) {
-                            $state.go( 'pickingList', {} );
-                        } else if ( $state.includes( 'vginDetail' ) ) {
-                            $state.go( 'vginList', {} );
-                        }
-                    }
-                } else {
-                    $rootScope.backButtonPressedOnceToExit = true;
-                    $cordovaToast.showShortBottom( 'Press again to return.' );
-                    setTimeout( function() {
-                        $rootScope.backButtonPressedOnceToExit = false;
-                    }, 2000 );
-                }
+                $state.go( 'index.main', {}, {
+                    reload: true
+                } );
             } else if ( $ionicHistory.backView() ) {
                 $ionicHistory.goBack();
+            } else if ( $state.includes( 'grDetail' ) ) {
+                $state.go( 'grList', {} );
+            } else if ( $state.includes( 'putawayDetail' ) ) {
+                $state.go( 'putawayList', {} );
+            } else if ( $state.includes( 'pickingDetail' ) ) {
+                $state.go( 'pickingList', {} );
+            } else if ( $state.includes( 'vginDetail' ) ) {
+                $state.go( 'vginList', {} );
             } else {
                 // This is the last page: Show confirmation popup
                 $rootScope.backButtonPressedOnceToExit = true;
                 $cordovaToast.showShortBottom( 'Press again to exit.' );
-                setTimeout( function() {
+                setTimeout( function () {
                     $rootScope.backButtonPressedOnceToExit = false;
                 }, 2000 );
             }
             e.preventDefault();
             return false;
         }, 101 );
-    } ] );
+} ] );
 
 app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider',
-    function( $httpProvider, $stateProvider, $urlRouterProvider, $ionicConfigProvider ) {
-        //$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+    function ( $httpProvider, $stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+        $ionicConfigProvider.platform.ios.tabs.style( 'standard' );
+        $ionicConfigProvider.platform.ios.tabs.position( 'top' );
+        $ionicConfigProvider.platform.android.tabs.style( 'standard' );
+        $ionicConfigProvider.platform.android.tabs.position( 'top' )
+            /*
+            $ionicConfigProvider.platform.ios.navBar.alignTitle('center');
+            $ionicConfigProvider.platform.android.navBar.alignTitle('center');
+            $ionicConfigProvider.platform.ios.backButton.previousTitleText('').icon('ion-ios-arrow-thin-left');
+            $ionicConfigProvider.platform.android.backButton.previousTitleText('').icon('ion-android-arrow-back');
+            $ionicConfigProvider.platform.ios.views.transition('ios');
+            $ionicConfigProvider.platform.android.views.transition('android');
+            */
+            //$ionicConfigProvider.views.forwardCache(true);//开启全局缓存
+        $ionicConfigProvider.views.maxCache( 3 ); //关闭缓存
+        $httpProvider.defaults.headers.put[ 'Content-Type' ] = 'application/x-www-form-urlencoded;charset=utf-8';
+        $httpProvider.defaults.headers.post[ 'Content-Type' ] = 'application/x-www-form-urlencoded;charset=utf-8';
+        // Override $http service's default transformRequest
+        $httpProvider.defaults.transformRequest = [ function ( data ) {
+            /**
+             * The workhorse; converts an object to x-www-form-urlencoded serialization.
+             * @param {Object} obj
+             * @return {String}
+             */
+            var param = function ( obj ) {
+                var query = '';
+                var name, value, fullSubName, subName, subValue, innerObj, i;
+
+                for ( name in obj ) {
+                    value = obj[ name ];
+
+                    if ( value instanceof Array ) {
+                        for ( i = 0; i < value.length; ++i ) {
+                            subValue = value[ i ];
+                            fullSubName = name + '[' + i + ']';
+                            innerObj = {};
+                            innerObj[ fullSubName ] = subValue;
+                            query += param( innerObj ) + '&';
+                        }
+                    } else if ( value instanceof Object ) {
+                        for ( subName in value ) {
+                            subValue = value[ subName ];
+                            fullSubName = name + '[' + subName + ']';
+                            innerObj = {};
+                            innerObj[ fullSubName ] = subValue;
+                            query += param( innerObj ) + '&';
+                        }
+                    } else if ( value !== undefined && value !== null ) {
+                        query += encodeURIComponent( name ) + '=' +
+                            encodeURIComponent( value ) + '&';
+                    }
+                }
+
+                return query.length ? query.substr( 0, query.length - 1 ) : query;
+            };
+
+            return angular.isObject( data ) && String( data ) !== '[object File]' ?
+                param( data ) :
+                data;
+          } ];
         $ionicConfigProvider.backButton.previousTitleText( false );
         $stateProvider
             .state( 'index', {
@@ -205,6 +187,11 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                         controller: 'MainCtrl'
                     }
                 }
+            } )
+            .state( 'enquiryList', {
+                url: '/enquiry/list',
+                templateUrl: 'view/Enquiry/list.html',
+                controller: 'EnquiryListCtrl'
             } )
             .state( 'grList', {
                 url: '/gr/list',
