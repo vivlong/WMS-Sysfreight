@@ -1,5 +1,5 @@
-appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$ionicPopup', '$ionicLoading', 'ApiService',
-    function( $scope, $stateParams, $state, $timeout, $ionicPopup, $ionicLoading, ApiService ) {
+appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$ionicPopup', '$ionicLoading', '$cordovaBarcodeScanner', 'ApiService',
+    function( $scope, $stateParams, $state, $timeout, $ionicPopup, $ionicLoading, $cordovaBarcodeScanner, ApiService ) {
         var alertPopup = null;
         var alertPopupTitle = '';
         $scope.Rcbp1 = {};
@@ -23,7 +23,7 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
                 var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
                 } );
             }
@@ -31,7 +31,7 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
         $scope.refreshGrnNos = function( Grn ) {
             if(is.not.undefined(Grn) && is.not.empty(Grn)){
                 var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + Grn;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
                 } );
             }
@@ -39,7 +39,7 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
         $scope.ShowImgr1 = function( Customer ) {
             if(is.not.undefined(Customer) && is.not.empty(Customer)){
                 var strUri = '/api/wms/imgr1?StatusCode=EXE&CustomerCode=' + Customer;
-                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                ApiService.Get( strUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;
                 } );
             }else{
@@ -65,7 +65,7 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
         $scope.GoToImgr2= function( GoodsReceiptNoteNo ){
             if(is.not.undefined(GoodsReceiptNoteNo) && is.not.empty(GoodsReceiptNoteNo)){
                 var strUri = '/api/wms/imgr1?StatusCode=EXE&GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
                     $scope.GrnNo.selected = $scope.GrnNos[0];
                     $scope.ShowImgr2(GoodsReceiptNoteNo);
@@ -75,7 +75,7 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
         $scope.ShowImgr2 = function( GoodsReceiptNoteNo ) {
             if(is.not.undefined(GoodsReceiptNoteNo) && is.not.empty(GoodsReceiptNoteNo)){
                 var strUri = '/api/wms/imgr2/transfer?GoodsReceiptNoteNo=' + GoodsReceiptNoteNo;
-                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                ApiService.Get( strUri, true ).then( function success( result ) {
                     $scope.Imgr1s = {};
                     $scope.Imgr2s = result.data.results;
                     $( '#div-grt-list' ).focus();
@@ -111,10 +111,16 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
             }
         };
         $scope.checkQty = function(imgr2){
-            if(imgr2.Balance - imgr2.Qty < 0){
-                showPopup('Balance can not be nagative','assertive', function(){
-                    $( '#txt-qty-' + imgr2.LineItemNo).select();
-                });
+            if(imgr2.Qty < 0){
+                $scope.Imgr2s[imgr2.LineItemNo-1].Qty = 0;
+            }else{
+                if(imgr2.Balance - imgr2.Qty < 0){
+                    $scope.Imgr2s[imgr2.LineItemNo-1].Qty = $scope.Imgr2s[imgr2.LineItemNo-1].Balance;
+                    //$scope.Imgr2s[imgr2.LineItemNo-1].Balance = 0;
+                    /*showPopup('Balance can not be nagative','assertive', function(){
+                        $( '#txt-qty-' + imgr2.LineItemNo).select();
+                    });*/
+                }
             }
         };
         $scope.checkConfirm = function() {
@@ -127,7 +133,7 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
             }
             if(blnConfirm){
                 var strUri = '/api/wms/imit1/create?UserID=' + sessionStorage.getItem( 'UserId').toString();
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     var imit1 = result.data.results[0];
                     var len = $scope.Imgr2s.length;
                     if ( imit1.TrxNo > 0 && len > 0 ) {
@@ -143,14 +149,14 @@ appControllers.controller( 'GtListCtrl', ['$scope', '$stateParams', '$state', '$
                             if ( imgr2.Qty > 0 && is.not.empty(imgr2.NewStoreNo) ) {
                                 LineItemNo = LineItemNo + 1;
                                 var strUri = '/api/wms/imit2/create?TrxNo=' + imit1.TrxNo + '&LineItemNo=' + LineItemNo + '&Imgr2TrxNo=' + imgr2.TrxNo + '&Imgr2LineItemNo=' + imgr2.LineItemNo + ' &NewStoreNo=' + imgr2.NewStoreNo + ' &Qty=' + imgr2.Qty + ' &UpdateBy=' + sessionStorage.getItem( 'UserId').toString();
-                                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                                ApiService.Get( strUri, false ).then( function success( result ) {
 
                                 } );
                             }
                         }
                         $ionicLoading.hide();
                         var strUri = '/api/wms/imit1/confirm?TrxNo=' + imit1.TrxNo + '&UpdateBy=' + sessionStorage.getItem( 'UserId').toString();
-                        ApiService.GetParam( strUri, false ).then( function success( result ) {
+                        ApiService.Get( strUri, false ).then( function success( result ) {
                             showPopup('Comfirm success','calm', function(){
                                 $scope.clear();
                                 $scope.returnMain();
@@ -225,7 +231,7 @@ appControllers.controller( 'GtFromCtrl', [ '$scope', '$stateParams', '$state', '
                 var keys = barcode.split('-');
                 if(keys.length > 1 && is.not.empty(keys[1])){
                     var strUri = '/api/wms/imgr2/transfer?TrxNo=' + keys[0] + '&LineItemNo=' + keys[1];
-                    ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    ApiService.Get( strUri, true ).then( function success( result ) {
                         $scope.Detail.Imgr2 = result.data.results[0];
                         if ( is.not.undefined( $scope.Detail.Imgr2 ) ) {
                             var imgr2 = {
@@ -588,20 +594,20 @@ appControllers.controller( 'GtToCtrl', [ '$scope', '$stateParams', '$state', '$h
         var confirm = function(imgr2s) {
             if(is.array(imgr2s) && is.not.empty(imgr2s)){
                 var strUri = '/api/wms/imit1/create?UserID=' + sessionStorage.getItem( 'UserId').toString();
-                ApiService.GetParam( strUri, false ).then( function success( result ) {
+                ApiService.Get( strUri, false ).then( function success( result ) {
                     var imit1 = result.data.results;
                     var len = imgr2s.count;
                     if ( len > 0 ) {
                         $ionicLoading.show();
                         for ( var i = 0; i < len; i++ ) {
                             var strUri = '/api/wms/imit2/create?TrxNo=' + imit1.TrxNo + '&LineItemNo=' + results.rows.item( i ).LineItemNo + ' &NewStoreNo=' + results.rows.item( i ).StoreNoTo + ' &Qty=' + results.rows.item( i ).ScanQtyTo + ' &UpdateBy=' + sessionStorage.getItem( 'UserId').toString();
-                            ApiService.GetParam( strUri, false ).then( function success( result ) {
+                            ApiService.Get( strUri, false ).then( function success( result ) {
 
                             } );
                         }
                         $ionicLoading.hide();
                         var strUri = '/api/wms/imit1/confirm?TrxNo=' + imit1.TrxNo + '&UpdateBy=' + sessionStorage.getItem( 'UserId').toString();
-                        ApiService.GetParam( strUri, false ).then( function success( result ) {
+                        ApiService.Get( strUri, false ).then( function success( result ) {
                             showPopup('Comfirm success','calm', function(popup){
                                 $timeout( function() {
                                     popup.close();

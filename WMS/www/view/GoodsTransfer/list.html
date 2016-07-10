@@ -55,7 +55,7 @@
                     <div class="col col-50" style="padding:0px;">
                         <label class="item item-input">
                             <span class="input-label" style="padding-top:2px; font-size: small;">Qty&nbsp;&nbsp;:</span>
-                            <input type="number" id="txt-qty-{{ Imgr2.LineItemNo }}" ng-model="Imgr2.Qty"  ng-blur="checkQty(Imgr2);" style="padding-bottom: 5px; padding-top: 0px; padding-right: 14px;">
+                            <input type="number" id="txt-qty-{{ Imgr2.LineItemNo }}" ng-model="Imgr2.Qty" ng-change="checkQty(Imgr2);" style="padding-bottom: 5px; padding-top: 0px; padding-right: 14px;">
                         </label>
                     </div>
                     <div class="col">

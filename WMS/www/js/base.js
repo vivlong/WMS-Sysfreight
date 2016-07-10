@@ -1,62 +1,16 @@
-
-var dbInfo = {
-    dbName: "WmsDB",
-    dbVersion: "1.0",
-    dbDisplayName: "WMS Database",
-    dbEstimatedSize: 10 * 11024 * 1024
-};
-var dbSql = "";
-function dbError(tx, error) {
-    console.log(error.message);
-}
-var dbWms = window.openDatabase(dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize);
-if (dbWms) {
-    dbWms.transaction(function (tx) {
-        dbSql = 'DROP TABLE if exists Imgr2_Receipt';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imgr2_Receipt (TrxNo INT, LineItemNo INT, ProductTrxNo INT, ProductCode TEXT, ProductDescription TEXT, SerialNoFlag TEXT, BarCode TEXT, DimensionFlag TEXT, PackingQty INT, WholeQty INT, LooseQty INT, ScanQty INT)";
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = 'DROP TABLE if exists Imsn1_Receipt';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imsn1_Receipt (ReceiptNoteNo TEXT, ReceiptLineItemNo INT, IssueNoteNo TEXT, IssueLineItemNo INT, SerialNo TEXT)";
-        tx.executeSql(dbSql, [], null, dbError);
-
-        dbSql = 'DROP TABLE if exists Imgr2_Putaway';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imgr2_Putaway (TrxNo INT, LineItemNo INT, StoreNo TEXT, StagingAreaFlag TEXT, ProductTrxNo INT, ProductCode TEXT, BarCode TEXT, DimensionFlag TEXT, PackingQty INT, WholeQty INT, LooseQty INT, ScanQty INT)";
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = 'DROP TABLE if exists Imsn1_Putaway';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imsn1_Putaway (ReceiptNoteNo TEXT, ReceiptLineItemNo INT, IssueNoteNo TEXT, IssueLineItemNo INT, SerialNo TEXT)";
-        tx.executeSql(dbSql, [], null, dbError);
-
-        dbSql = 'DROP TABLE if exists Imgr2_Transfer';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imgr2_Transfer (TrxNo INT, LineItemNo INT, StoreNo TEXT, StoreNoFrom TEXT, StoreNoTo TEXT, ProductTrxNo INT, ProductCode TEXT, ProductDescription TEXT, SerialNoFlag TEXT, BarCode TEXT, ScanQtyFrom INT, ScanQtyTo INT)";
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = 'DROP TABLE if exists Imsn1_Transfer';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imsn1_Transfer (ReceiptNoteNo TEXT, ReceiptLineItemNo INT, IssueNoteNo TEXT, IssueLineItemNo INT, SerialNo TEXT)";
-        tx.executeSql(dbSql, [], null, dbError);
-
-        dbSql = 'DROP TABLE if exists Imgi2_Picking';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imgi2_Picking (RowNum, TrxNo INT, LineItemNo INT, StoreNo TEXT, ProductTrxNo INT, ProductCode TEXT, ProductDescription TEXT, SerialNoFlag TEXT, SerialNo TEXT, BarCode TEXT, Qty INT, ScanQty INT, QtyBal INT)";
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = 'DROP TABLE if exists Imsn1_Picking';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imsn1_Picking (ReceiptNoteNo TEXT, ReceiptLineItemNo INT, IssueNoteNo TEXT, IssueLineItemNo INT, SerialNo TEXT)";
-        tx.executeSql(dbSql, [], null, dbError);
-
-        dbSql = 'DROP TABLE if exists Imgi2_Verify';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imgi2_Verify (RowNum, TrxNo INT, LineItemNo INT, ProductTrxNo INT, ProductCode TEXT, ProductDescription TEXT, SerialNoFlag TEXT, SerialNo TEXT, BarCode TEXT, Qty INT, ScanQty INT, QtyBal INT)";
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = 'DROP TABLE if exists Imsn1_Verify';
-        tx.executeSql(dbSql, [], null, dbError);
-        dbSql = "CREATE TABLE Imsn1_Verify (ReceiptNoteNo TEXT, ReceiptLineItemNo INT, IssueNoteNo TEXT, IssueLineItemNo INT, SerialNo TEXT)";
-        tx.executeSql(dbSql, [], null, dbError);
-    });
+var objClone = function (oldObj, newObj) {
+    for (var key in newObj) {
+        if (newObj.hasOwnProperty(key)) {
+            if (is.null(oldObj[key]) || is.undefined(oldObj[key]) || is.equal(oldObj[key], 'undefined')) {
+                oldObj[key] = '';
+            }
+            if (is.equal(newObj[key], 'INT')) {
+                newObj[key] = oldObj[key];
+            } else {
+                newObj[key] = oldObj[key];
+            }
+        }
+    }
 }
 
 var db_del_Imgr2_Receipt = function (){
@@ -304,30 +258,4 @@ var db_add_Imsn1_Verify = function(imsn1) {
             tx.executeSql(dbSql, [imsn1.IssueNoteNo, imsn1.IssueLineItemNo, imsn1.SerialNo], null, dbError);
         });
     }
-};
-
-var appendProtocol = function(url, blnSSL, portNo) {
-    if (url.length > 0 && url.toUpperCase().indexOf('HTTPS://') < 0 && url.toUpperCase().indexOf('HTTP://') < 0) {
-        if(blnSSL){
-            url = 'https://' + url;
-        }else{
-            var aURL = url.split('/');
-            if(aURL[0].indexOf(':') < 0){
-                url = 'http://' + aURL[0] + ':' + portNo;
-            }else{
-                url = 'http://' + aURL[0];
-            }
-            for(var i=1; i<aURL.length; i++){
-                url = url + '/' + aURL[i];
-            }
-        }
-    }
-    return url;
-};
-var rmProtocol = function(url) {
-    if (url.length > 0) {
-        var regex = /(https?:\/\/)?/gi;
-        url = url.replace(regex, '');
-    }
-    return url;
 };

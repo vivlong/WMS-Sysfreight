@@ -40,15 +40,28 @@ namespace WebApi.ServiceModel.Wms
                     {                       
 																								if (string.IsNullOrEmpty(request.StatusCode))
 																								{
-																												Result = db.SelectParam<Imgr1>(
-																																i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.CustomerCode == request.CustomerCode
-																												).OrderByDescending(i => i.ReceiptDate).ToList<Imgr1>();
+																												//Result = db.SelectParam<Imgr1>(
+																												//				i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.CustomerCode == request.CustomerCode
+																												//).OrderByDescending(i => i.ReceiptDate).ToList<Imgr1>();
+																												Result = db.Select<Imgr1>(
+																																"Select Top 20 Imgr1.* From Imgr1 " +
+																																"Where IsNull(GoodsReceiptNoteNo,'')<>'' And IsNUll(StatusCode,'')<>'DEL' And IsNUll(StatusCode,'')<>'EXE' And IsNUll(StatusCode,'')<>'CMP' " +
+																																"And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " +
+																																"Order By Imgr1.ReceiptDate Desc"
+																												);
 																								}
 																								else
 																								{
-																												Result = db.SelectParam<Imgr1>(
-																																i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode == request.StatusCode && i.CustomerCode == request.CustomerCode
-																												).OrderByDescending(i => i.ReceiptDate).ToList<Imgr1>();
+																												//Result = db.SelectParam<Imgr1>(
+																												//				i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode == request.StatusCode && i.CustomerCode == request.CustomerCode
+																												//).OrderByDescending(i => i.ReceiptDate).ToList<Imgr1>();
+																												Result = db.Select<Imgr1>(
+																																"Select Top 20 Imgr1.* From Imgr1 " +
+																																"Where IsNull(GoodsReceiptNoteNo,'')<>'' " +
+																																"And IsNUll(StatusCode,'') = '" + request.StatusCode + "' " +
+																																"And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " +
+																																"Order By Imgr1.ReceiptDate Desc"
+																												);
 																								}
                     }
                     else if (!string.IsNullOrEmpty(request.GoodsReceiptNoteNo))
@@ -59,7 +72,7 @@ namespace WebApi.ServiceModel.Wms
 																												//					i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.GoodsReceiptNoteNo.StartsWith(request.GoodsReceiptNoteNo)
 																												//);
 																												Result = db.Select<Imgr1>(
-																																"Select Imgr1.* From Imgr1 " +
+																																"Select Top 20 Imgr1.* From Imgr1 " +
 																																"Where IsNUll(StatusCode,'')<>'DEL' And IsNUll(StatusCode,'')<>'EXE' And IsNUll(StatusCode,'')<>'CMP' " +
 																																"And (Select count(*) from Imgr2 Where Imgr2.TrxNo=Imgr1.TrxNo) > 0 " +
 																																"And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'"
@@ -71,7 +84,7 @@ namespace WebApi.ServiceModel.Wms
 																												//					i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode == request.StatusCode && i.GoodsReceiptNoteNo.StartsWith(request.GoodsReceiptNoteNo)
 																												//);
 																												Result = db.Select<Imgr1>(
-																																"Select Imgr1.* From Imgr1 " +
+																																"Select Top 20 Imgr1.* From Imgr1 " +
 																																"Where IsNUll(StatusCode,'')='" + request.StatusCode + "' " +
 																																"And (Select count(*) from Imgr2 Where Imgr2.TrxNo=Imgr1.TrxNo) > 0 " +
 																																"And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'"
