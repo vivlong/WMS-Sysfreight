@@ -128,7 +128,6 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
                             } );
                     } );
             } else {
-                ENV.ssl = 'https:' === document.location.protocol ? true : false;
                 ApiService.Init();
             }
         } );
@@ -209,8 +208,18 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
             Version:    ENV.version,
             WebApiURL:  ENV.api,
             WebSiteUrl: ENV.website,
-            SSL:        { checked: ENV.ssl === '0' ? false : true },
+            WebPort: ENV.port,
             blnWeb:    ENV.fromWeb
+        };
+        var writeFile = function ( path, file, data ) {
+            $cordovaFile.writeFile( path, file, data, true )
+                .then( function ( success ) {
+                    ApiService.Init();
+                    $scope.return();
+                }, function ( error ) {
+                    $cordovaToast.showShortBottom( error );
+                    console.error( error );
+                } );
         };
         $scope.return = function() {
             if ( $ionicHistory.backView() ) {
@@ -222,53 +231,50 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
             }
         };
         $scope.save = function() {
+            if ( is.not.empty( $scope.Setting.WebPort ) ) {
+                ENV.port = $scope.Setting.WebPort;
+            } else {
+                $scope.Setting.WebPort = ENV.port;
+            }
             if ( is.not.empty( $scope.Setting.WebApiURL ) ) {
                 ENV.api = $scope.Setting.WebApiURL;
             } else {
-                $scope.Setting.WebApiURL = rmProtocol(ENV.api);
+                $scope.Setting.WebApiURL = ENV.api;
             }
             if ( is.not.empty( $scope.Setting.WebSiteUrl ) ) {
                 ENV.website = $scope.Setting.WebSiteUrl;
             } else {
-                $scope.Setting.WebSiteUrl = rmProtocol(ENV.website);
+                $scope.Setting.WebSiteUrl = ENV.website;
             }
-            ENV.ssl = $scope.Setting.SSL.checked ? '1' : '0';
-            ApiService.Init();
             if ( !ENV.fromWeb ) {
-                var data = 'website=' + ENV.website + '##api=' + ENV.api + '##ssl=' + ENV.ssl;
+                var data = 'website=' + ENV.website +
+                    '##api=' + ENV.api +
+                    '##port=' + ENV.port;
                 var path = cordova.file.externalRootDirectory;
                 var file = ENV.rootPath + '/' + ENV.configFile;
-                $cordovaFile.writeFile( path, file, data, true )
-                    .then( function( success ) {
-                        //$rootScope.$broadcast( 'logout' );
-                        $state.go( 'index.login', {}, {
-                            reload: true
-                        } );
-                    }, function( error ) {
-                        $cordovaToast.showShortBottom( error );
-                    } );
+                writeFile( path, file, data );
             } else {
-                //$rootScope.$broadcast( 'logout' );
-                $state.go( 'index.login', {}, {
-                    reload: true
-                } );
+                ApiService.Init();
+                $scope.return();
             }
         };
         $scope.reset = function() {
             $scope.Setting.WebApiURL = ENV.reset.api;
             $scope.Setting.WebSiteUrl = ENV.reset.website;
-            $scope.Setting.SSL = { checked: false };
+            $scope.Setting.WebPort = ENV.reset.port;
             if ( !ENV.fromWeb ) {
                 var path = cordova.file.externalRootDirectory;
                 var file = ENV.rootPath + '/' + ENV.configFile;
                 $cordovaFile.removeFile( path, file )
                     .then( function( success ) {
-
+                        ApiService.Init();
+                        $scope.save();
                     }, function( error ) {
                         //$cordovaToast.showShortBottom( error );
                     } );
+            }else{
+                ApiService.Init();
             }
-            ApiService.Init();
         };
     } ] );
 
