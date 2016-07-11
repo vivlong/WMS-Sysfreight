@@ -11,7 +11,7 @@
                     <label>Customer</label>
                 </div>
                 <div class="col col-67">
-                    <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowImgr1(Rcbp1.selected.BusinessPartyCode)">
+                    <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="showImgr1(Rcbp1.selected.BusinessPartyCode)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
                         <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
                             <div ng-bind="Rcbp1.BusinessPartyName"></div>
@@ -27,7 +27,7 @@
                     <label>GRN No</label>
                 </div>
                 <div class="col col-67">
-                    <ui-select theme="bootstrap" ng-model="GrnNo.selected" reset-search-input="true" on-select="ShowImgr2(GrnNo.selected.GoodsReceiptNoteNo)">
+                    <ui-select theme="bootstrap" ng-model="GrnNo.selected" reset-search-input="true" on-select="showImgr2(GrnNo.selected.GoodsReceiptNoteNo)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.GoodsReceiptNoteNo}}</ui-select-match>
                         <ui-select-choices repeat="GrnNo in GrnNos track by $index" refresh="refreshGrnNos($select.search)" refresh-delay="0" position="down">
                             <div ng-bind="GrnNo.GoodsReceiptNoteNo"></div>
@@ -47,6 +47,9 @@
                 <label class="item item-input">
                     <span class="input-label" style="padding-top:2px; padding-bottom: 2px; font-size: small;">Description : <span ng-bind="Imgr2.ProductDescription  | limitTo:25"></span></span>
                 </label>
+                <label class="item item-input">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px; font-size: small;">Cust Batch No : <span ng-bind="Imgr2.UserDefine1"></span></span>
+                </label>
                 <div class="row" style="margin-left:-5px;">
                     <div class="col col-80" style="padding:0px;">
                         <label class="item item-input">
@@ -62,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            <ion-item ng-repeat="Imgr1 in Imgr1s" id="Imgr1-{{ Imgr1.Index }}" class="item-remove-animate item-icon-right" ng-click="ShowImgr2(Imgr1.GoodsReceiptNoteNo)">
+            <ion-item ng-repeat="Imgr1 in Imgr1s" id="Imgr1-{{ Imgr1.Index }}" class="item-remove-animate item-icon-right" ng-click="showImgr2(Imgr1.GoodsReceiptNoteNo)">
                 <p style="font-size:0.8em;">Customer&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.CustomerCode" style="font-size:1.2em;"></span></p>
                 <p style="font-size:0.8em;">GRN&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.GoodsReceiptNoteNo" style="font-size:1.3em;"></span></p>
                 <p style="font-size:0.8em;">Receipt Date&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="showDate(Imgr1.ReceiptDate)" style="font-size:1.1em;"></span></p>
