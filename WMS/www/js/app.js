@@ -9,8 +9,36 @@ var app = angular.module( 'WMSAPP', [
     'WMSAPP.services',
     'WMSAPP.controllers'
 ] );
-app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicPopup', '$ionicHistory', '$ionicLoading', '$cordovaKeyboard', '$cordovaToast', '$cordovaFile', 'SqlService',
-    function ( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicPopup, $ionicHistory, $ionicLoading, $cordovaKeyboard, $cordovaToast, $cordovaFile, SqlService ) {
+app.run( [
+    'ENV',
+    '$ionicPlatform',
+    '$rootScope',
+    '$state',
+    '$location',
+    '$timeout',
+    '$ionicPopup',
+    '$ionicHistory',
+    '$ionicLoading',
+    '$cordovaKeyboard',
+    '$cordovaToast',
+    '$cordovaFile',
+    'SqlService',
+    'TABLE_DB',
+    function (
+        ENV,
+        $ionicPlatform,
+        $rootScope,
+        $state,
+        $location,
+        $timeout,
+        $ionicPopup,
+        $ionicHistory,
+        $ionicLoading,
+        $cordovaKeyboard,
+        $cordovaToast,
+        $cordovaFile,
+        SqlService,
+        TABLE_DB ) {
         if ( window.cordova ) {
             ENV.fromWeb = false;
         } else {
@@ -25,7 +53,33 @@ app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeo
                 // org.apache.cordova.statusbar required
                 StatusBar.styleDefault();
             }
-            SqlService.Init();
+            SqlService.Init().then(function(res){
+                SqlService.Drop( 'Imgr2_Receipt' ).then( function ( res ) {
+                    SqlService.Create( 'Imgr2_Receipt', TABLE_DB.Imgr2_Receipt ).then( function ( res ) {
+
+                    } );
+                } );
+                SqlService.Drop( 'Imgr2_Putaway' ).then( function ( res ) {
+                    SqlService.Create( 'Imgr2_Putaway', TABLE_DB.Imgr2_Putaway ).then( function ( res ) {
+
+                    } );
+                } );
+                SqlService.Drop( 'Imgr2_Transfer' ).then( function ( res ) {
+                    SqlService.Create( 'Imgr2_Transfer', TABLE_DB.Imgr2_Transfer ).then( function ( res ) {
+
+                    } );
+                } );
+                SqlService.Drop( 'Imgi2_Picking' ).then( function ( res ) {
+                    SqlService.Create( 'Imgi2_Picking', TABLE_DB.Imgi2_Picking ).then( function ( res ) {
+
+                    } );
+                } );
+                SqlService.Drop( 'Imgi2_Verify' ).then( function ( res ) {
+                    SqlService.Create( 'Imgi2_Verify', TABLE_DB.Imgi2_Verify ).then( function ( res ) {
+
+                    } );
+                } );
+            });
         } );
         $ionicPlatform.registerBackButtonAction( function ( e ) {
             /*

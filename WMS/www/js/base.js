@@ -1,50 +1,22 @@
-var objClone = function (oldObj, newObj) {
-    for (var key in newObj) {
-        if (newObj.hasOwnProperty(key)) {
-            if (is.null(oldObj[key]) || is.undefined(oldObj[key]) || is.equal(oldObj[key], 'undefined')) {
-                oldObj[key] = '';
-            }
-            if (is.equal(newObj[key], 'INT')) {
-                newObj[key] = oldObj[key];
+var objClone = function (obj) {
+    var newObj = {};
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            if(is.object(obj[prop])){
+                newObj[prop] = objClone(obj[prop]);
             } else {
-                newObj[key] = oldObj[key];
+                if ( is.null( obj[ prop ] ) || is.undefined( obj[ prop ] ) || is.equal( obj[ prop ], 'undefined' ) ) {
+                    newObj[ prop ] = '';
+                } else{
+                    newObj[prop] = obj[prop];
+                }
             }
         }
     }
-}
+    return newObj;
+};
 
-var db_del_Imgr2_Receipt = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imgr2_Receipt';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
-var db_add_Imgr2_Receipt = function( imgr2 ) {
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'INSERT INTO Imgr2_Receipt (TrxNo, LineItemNo, ProductTrxNo, ProductCode, ProductDescription, SerialNoFlag, BarCode, DimensionFlag, PackingQty, WholeQty, LooseQty, ScanQty) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            tx.executeSql( dbSql, [ imgr2.TrxNo, imgr2.LineItemNo, imgr2.ProductTrxNo, imgr2.ProductCode, imgr2.ProductDescription, imgr2.SerialNoFlag, imgr2.BarCode, imgr2.DimensionFlag, imgr2.PackingQty, imgr2.WholeQty, imgr2.LooseQty, 0], null, dbError );
-        } );
-    }
-};
-var db_update_Imgr2_Receipt = function( imgr2 ) {
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Update Imgr2_Receipt set ScanQty=? Where TrxNo=? and LineItemNo=?';
-            tx.executeSql( dbSql, [ imgr2.ScanQty, imgr2.TrxNo, imgr2.LineItemNo ], null, dbError );
-        } );
-    }
-};
-var db_del_Imsn1_Receipt = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imsn1_Receipt';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
+
 var db_add_Imsn1_Receipt = function( imsn1 ) {
     if ( dbWms ) {
         dbWms.transaction( function( tx ) {
@@ -53,15 +25,6 @@ var db_add_Imsn1_Receipt = function( imsn1 ) {
         } );
     }
 };
-
-var db_del_Imgr2_Putaway = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imgr2_Putaway';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
 var db_add_Imgr2_Putaway = function( imgr2 ) {
     if ( dbWms ) {
         dbWms.transaction( function( tx ) {
@@ -79,14 +42,6 @@ var db_update_Imgr2_Putaway = function( imgr2 ) {
     }
 };
 
-var db_del_Imgr2_Transfer = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imgr2_Transfer';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
 var db_add_Imgr2_Transfer = function( imgr2 ) {
     if ( dbWms ) {
         dbWms.transaction( function( tx ) {
@@ -140,14 +95,7 @@ var db_query_Imgr2_Transfer = function( callback ) {
     }
 }
 
-var db_del_Imgi2_Picking = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imgi2_Picking';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
+
 var db_add_Imgi2_Picking = function(imgi2) {
     if (dbWms) {
         dbWms.transaction(function(tx) {
@@ -183,14 +131,7 @@ var db_query_Imgi2_Picking = function( callback ) {
         } );
     }
 }
-var db_del_Imsn1_Picking = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imsn1_Picking';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
+
 var db_add_Imsn1_Picking = function(imsn1) {
     if (dbWms) {
         dbWms.transaction(function(tx) {
@@ -200,14 +141,6 @@ var db_add_Imsn1_Picking = function(imsn1) {
     }
 };
 
-var db_del_Imgi2_Verify = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imgi2_Verify';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
 var db_add_Imgi2_Verify = function(imgi2) {
     if (dbWms) {
         dbWms.transaction(function(tx) {
@@ -243,14 +176,7 @@ var db_query_Imgi2_Verify = function( callback ) {
         } );
     }
 }
-var db_del_Imsn1_Verify = function (){
-    if ( dbWms ) {
-        dbWms.transaction( function( tx ) {
-            dbSql = 'Delete from Imsn1_Verify';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
+
 var db_add_Imsn1_Verify = function(imsn1) {
     if (dbWms) {
         dbWms.transaction(function(tx) {

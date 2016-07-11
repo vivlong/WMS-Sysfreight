@@ -23,10 +23,11 @@
             <label class="item item-input item-stacked-label">
                 <span class="input-label">Web Site URL</span>
                 <input type="text" placeholder="www.sysfreight.net/mobileapp-wh-cbg" ng-model="Setting.WebSiteUrl">
+            </label>            
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">Port No</span>
+                <input type="text" placeholder="80" ng-model="Setting.WebPort">
             </label>
-            <ion-toggle ng-model="Setting.SSL.checked" ng-if="Setting.blnWeb">
-               SSL Encryption
-           </ion-toggle>
         </div>
     </ion-pane>
     <ion-footer-bar class="bar-positive hide-on-keyboard-open">
