@@ -44,7 +44,7 @@ namespace WebApi.ServiceModel.Wms
 																												//				i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.CustomerCode == request.CustomerCode
 																												//).OrderByDescending(i => i.ReceiptDate).ToList<Imgr1>();
 																												Result = db.Select<Imgr1>(
-																																"Select Top 20 Imgr1.* From Imgr1 " +
+																																"Select Top 10 Imgr1.* From Imgr1 " +
 																																"Where IsNull(GoodsReceiptNoteNo,'')<>'' And IsNUll(StatusCode,'')<>'DEL' And IsNUll(StatusCode,'')<>'EXE' And IsNUll(StatusCode,'')<>'CMP' " +
 																																"And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " +
 																																"Order By Imgr1.ReceiptDate Desc"
@@ -56,7 +56,7 @@ namespace WebApi.ServiceModel.Wms
 																												//				i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode == request.StatusCode && i.CustomerCode == request.CustomerCode
 																												//).OrderByDescending(i => i.ReceiptDate).ToList<Imgr1>();
 																												Result = db.Select<Imgr1>(
-																																"Select Top 20 Imgr1.* From Imgr1 " +
+																																"Select Top 10 Imgr1.* From Imgr1 " +
 																																"Where IsNull(GoodsReceiptNoteNo,'')<>'' " +
 																																"And IsNUll(StatusCode,'') = '" + request.StatusCode + "' " +
 																																"And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " +
@@ -72,7 +72,7 @@ namespace WebApi.ServiceModel.Wms
 																												//					i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.GoodsReceiptNoteNo.StartsWith(request.GoodsReceiptNoteNo)
 																												//);
 																												Result = db.Select<Imgr1>(
-																																"Select Top 20 Imgr1.* From Imgr1 " +
+																																"Select Top 10 Imgr1.* From Imgr1 " +
 																																"Where IsNUll(StatusCode,'')<>'DEL' And IsNUll(StatusCode,'')<>'EXE' And IsNUll(StatusCode,'')<>'CMP' " +
 																																"And (Select count(*) from Imgr2 Where Imgr2.TrxNo=Imgr1.TrxNo) > 0 " +
 																																"And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'"
@@ -84,7 +84,7 @@ namespace WebApi.ServiceModel.Wms
 																												//					i => i.GoodsReceiptNoteNo != null && i.GoodsReceiptNoteNo != "" && i.StatusCode == request.StatusCode && i.GoodsReceiptNoteNo.StartsWith(request.GoodsReceiptNoteNo)
 																												//);
 																												Result = db.Select<Imgr1>(
-																																"Select Top 20 Imgr1.* From Imgr1 " +
+																																"Select Top 10 Imgr1.* From Imgr1 " +
 																																"Where IsNUll(StatusCode,'')='" + request.StatusCode + "' " +
 																																"And (Select count(*) from Imgr2 Where Imgr2.TrxNo=Imgr1.TrxNo) > 0 " +
 																																"And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'"
@@ -144,7 +144,7 @@ namespace WebApi.ServiceModel.Wms
 																{
 																				string strSql = "Select Imgr2.TrxNo, Imgr2.LineItemNo, IsNull(Imgr2.StoreNo,'') AS StoreNo," +
 																								"(Select StagingAreaFlag From Whwh2 Where WarehouseCode=Imgr2.WarehouseCode And StoreNo=Imgr2.StoreNo) AS StagingAreaFlag," +
-																								"IsNull(Imgr2.ProductCode,'') AS ProductCode, IsNull(Imgr2.ProductDescription,'') AS ProductDescription," +
+																								"IsNull(Imgr2.ProductCode,'') AS ProductCode, IsNull(Imgr2.ProductDescription,'') AS ProductDescription, IsNull(Imgr2.UserDefine1,'') AS UserDefine1," +
 																								"(Case Imgr2.DimensionFlag When '1' Then Imgr2.PackingQty When '2' Then Imgr2.WholeQty Else Imgr2.LooseQty End) AS Qty " +
 																								"From Imgr2 " +
 																								"Left Join Imgr1 On Imgr2.TrxNo = Imgr1.TrxNo " +

@@ -84,7 +84,10 @@ namespace WebApi.ServiceInterface.Wms
 								{
 												if (auth.AuthResult(token, uri))
 												{
-																if (uri.IndexOf("/wms/whwh2") > 0)
+																if (uri.IndexOf("/wms/whwh1") > 0)
+																{
+																				ecr.data.results = whwh_Logic.Get_Whwh1_List(request);
+																} else if (uri.IndexOf("/wms/whwh2") > 0)
 																{
 																				ecr.data.results = whwh_Logic.Get_Whwh2_List(request);
 																}
@@ -158,6 +161,23 @@ namespace WebApi.ServiceInterface.Wms
 																else if (uri.IndexOf("/wms/imit2/create") > 0)
 																{
 																				ecr.data.results = imit_Logic.Insert_Imit2(request);
+																}
+																ecr.meta.code = 200;
+																ecr.meta.message = "OK";
+												}
+												else
+												{
+																ecr.meta.code = 401;
+																ecr.meta.message = "Unauthorized";
+												}
+								}
+								public void TS_Impm(Auth auth, Impm request, Impm_Logic impm_Logic, CommonResponse ecr, string[] token, string uri)
+								{
+												if (auth.AuthResult(token, uri))
+												{
+																if (uri.IndexOf("/wms/impm1") > 0)
+																{
+																				ecr.data.results = impm_Logic.Get_Impm1_List(request);
 																}
 																ecr.meta.code = 200;
 																ecr.meta.message = "OK";

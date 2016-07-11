@@ -130,6 +130,19 @@ namespace WebApi.ServiceInterface
 												catch (Exception ex) { cr(ecr, ex); }
 												return ecr;
 								}
+								public ServiceModel.Wms.Impm_Logic wms_Impm_Logic { get; set; }
+								public object Any(ServiceModel.Wms.Impm request)
+								{
+												CommonResponse ecr = new CommonResponse();
+												ecr.initial();
+												try
+												{
+																ServiceInterface.Wms.TableService ls = new ServiceInterface.Wms.TableService();
+																ls.TS_Impm(auth, request, wms_Impm_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
+												}
+												catch (Exception ex) { cr(ecr, ex); }
+												return ecr;
+								}
 								/*
 								public object Any(List_AsnNo request)
 								{

@@ -12,6 +12,7 @@ namespace WebApi.ServiceModel.Tables
 								public int ProductTrxNo { get; set; }
 								public string ProductCode { get; set; }
 								public string ProductDescription { get; set; }
+								public string UserDefine1 { get; set; }
 								public string SerialNoFlag { get; set; }
 								public string BarCode { get; set; }
 								public string DimensionFlag { get; set; }

@@ -13,6 +13,7 @@ namespace WebApi.ServiceModel.Tables
 								public string StagingAreaFlag { get; set; }
 								public string ProductCode { get; set; }
 								public string ProductDescription { get; set; }
+								public string UserDefine1 { get; set; }
         public int Qty { get; set; }
     }
 }
