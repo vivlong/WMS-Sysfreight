@@ -10,10 +10,10 @@
                     <label>Product Code</label>
                 </div>
                 <div class="col col-60">
-                    <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowImgi1(Rcbp1.selected.BusinessPartyCode)">
-                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
-                        <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind-html="Rcbp1.BusinessPartyName"></div>
+                    <ui-select ng-model="Impr1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowImpr1(Impr1.selected.ProductCode)">
+                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.ProductCode}}</ui-select-match>
+                        <ui-select-choices repeat="Impr1 in Impr1s track by $index" refresh="refreshImpr1($select.search)" refresh-delay="0" position="down">
+                            <div ng-bind-html="Impr1.ProductCode | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
@@ -23,17 +23,12 @@
                     <label>Cust Batch No</label>
                 </div>
                 <div class="col col-60">
-                    <ui-select theme="bootstrap"
-                                ng-model="GinNo.selected"
-                                reset-search-input="true"
-                                on-select="GoToDetail(GinNo.selected)">
+                    <ui-select theme="bootstrap" ng-model="Impm1.selected" reset-search-input="true" on-select="ShowImpr1(Impm1.selected)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">
-                            {{$select.selected.GoodsIssueNoteNo}}
+                            {{$select.selected.UserDefine1}}
                         </ui-select-match>
-                        <ui-select-choices repeat="GinNo in GinNos track by $index"
-                                            refresh="refreshGinNos($select.search)"
-                                            refresh-delay="0">
-                            <div ng-bind-html="GinNo.GoodsIssueNoteNo | highlight: $select.search"></div>
+                        <ui-select-choices repeat="Impm1 in Impm1s track by $index" refresh="refreshImpm1s($select.search)" refresh-delay="0">
+                            <div ng-bind-html="Impm1.UserDefine1 | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>

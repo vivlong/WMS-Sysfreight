@@ -13,7 +13,7 @@
                     <ui-select ng-model="Whwh1.selected" theme="bootstrap" reset-search-input="true">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.WarehouseName | limitTo:16}}</ui-select-match>
                         <ui-select-choices repeat="Whwh1 in Whwh1s track by $index" refresh="refreshWhwh1($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind="Whwh1.WarehouseName"></div>
+                            <div ng-bind="Whwh1.WarehouseName | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
@@ -26,7 +26,7 @@
                     <ui-select theme="bootstrap" ng-model="Whwh2.selected" reset-search-input="true" on-select="showImpm1(Whwh2.selected.StoreNo)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.StoreNo}}</ui-select-match>
                         <ui-select-choices repeat="Whwh2 in Whwh2s track by $index" refresh="refreshWhwh2($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind="Whwh2.StoreNo"></div>
+                            <div ng-bind="Whwh2.StoreNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
