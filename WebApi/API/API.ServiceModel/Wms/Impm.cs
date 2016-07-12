@@ -10,15 +10,46 @@ using WebApi.ServiceModel.Tables;
 
 namespace WebApi.ServiceModel.Wms
 {
-				[Route("/wms/impm1", "Get")]
+				[Route("/wms/impm1", "Get")]								//impm1?UserDefine1= &WarehouseCode= &StoreNo=
     public class Impm : IReturn<CommonResponse>
 				{
+								public string UserDefine1 { get; set; }
 								public string WarehouseCode { get; set; }
 								public string StoreNo { get; set; }
     }
 				public class Impm_Logic
     {        
         public IDbConnectionFactory DbConnectionFactory { get; set; }
+								public object Get_Impm1(Impm request)
+								{
+												object Result = null;
+												if (!string.IsNullOrEmpty(request.UserDefine1))
+												{
+																Result = Get_Impm1_Enquiry_List(request);
+												}
+												else
+												{
+																Result = Get_Impm1_List(request);
+												}
+												return Result;
+								}
+								public List<Impm1_Enquiry> Get_Impm1_Enquiry_List(Impm request)
+								{
+												List<Impm1_Enquiry> Result = null;
+												try
+												{
+																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+																{
+																				string strSql = "Select Top 10 Impm1.TrxNo, Impm1.UserDefine1 " +
+																								"From Impm1 " +
+																								"Where Impm1.UserDefine1 LIKE '" + request.UserDefine1 + "%' " +
+																								"Order By Impm1.TrxNo ASC";
+																				Result = db.Select<Impm1_Enquiry>(strSql);
+																}
+												}
+												catch { throw; }
+												return Result;
+								}
 								public List<Impm1> Get_Impm1_List(Impm request)
         {
 												List<Impm1> Result = null;

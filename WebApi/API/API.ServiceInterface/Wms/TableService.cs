@@ -69,7 +69,7 @@ namespace WebApi.ServiceInterface.Wms
             {
 																if (uri.IndexOf("/wms/impr1") > 0)
 																{
-																				ecr.data.results = impr_Logic.Get_Impr1_List(request);
+																				ecr.data.results = impr_Logic.Get_Impr1(request);
 																}
 																ecr.meta.code = 200;
 																ecr.meta.message = "OK";
@@ -177,7 +177,7 @@ namespace WebApi.ServiceInterface.Wms
 												{
 																if (uri.IndexOf("/wms/impm1") > 0)
 																{
-																				ecr.data.results = impm_Logic.Get_Impm1_List(request);
+																				ecr.data.results = impm_Logic.Get_Impm1(request);
 																}
 																ecr.meta.code = 200;
 																ecr.meta.message = "OK";

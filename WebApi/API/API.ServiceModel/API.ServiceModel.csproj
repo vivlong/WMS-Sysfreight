@@ -91,6 +91,7 @@
     <Compile Include="Tables\Imgi2_Verify.cs" />
     <Compile Include="Tables\Imgi2_Picking.cs" />
     <Compile Include="Tables\Imgr2_Receipt.cs" />
+    <Compile Include="Tables\Impm1_Enquiry.cs" />
     <Compile Include="Tables\Impm1.cs" />
     <Compile Include="Tables\Imit.cs" />
     <Compile Include="Tables\Imgi2.cs" />
