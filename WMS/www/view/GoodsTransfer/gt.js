@@ -22,8 +22,7 @@ appControllers.controller( 'GtListCtrl', [
         var popupTitle = '';
         $scope.Whwh1 = {};
         $scope.Whwh2 = {};
-        $scope.Imgr1s = {};
-        $scope.Imgr2s = {};
+        $scope.Impm1s = {};
         $scope.refreshWhwh1 = function ( WarehouseName ) {
             if ( is.not.undefined( WarehouseName ) && is.not.empty( WarehouseName ) ) {
                 var objUri = ApiService.Uri( '/api/wms/whwh1' );
@@ -48,7 +47,7 @@ appControllers.controller( 'GtListCtrl', [
                 var objUri = ApiService.Uri( '/api/wms/impm1' );
                 objUri.addSearch( 'StoreNo', StoreNo );
                 ApiService.Get( objUri, true ).then( function success( result ) {
-                    $scope.Imgr1s = result.data.results;
+                    $scope.Impm1s = result.data.results;
                 } );
             } else {
                 $scope.clear();
@@ -70,31 +69,6 @@ appControllers.controller( 'GtListCtrl', [
             }
         };
         */
-        $scope.GoToImgr2 = function ( GoodsReceiptNoteNo ) {
-            if ( is.not.undefined( GoodsReceiptNoteNo ) && is.not.empty( GoodsReceiptNoteNo ) ) {
-                var objUri = ApiService.Uri('/api/wms/imgr1');
-                objUri.addSearch( 'StatusCode','EXE');
-                objUri.addSearch( 'GoodsReceiptNoteNo',GoodsReceiptNoteNo);
-                ApiService.Get( objUri, false ).then( function success( result ) {
-                    $scope.GrnNos = result.data.results;
-                    $scope.GrnNo.selected = $scope.GrnNos[ 0 ];
-                    $scope.showImgr2( GoodsReceiptNoteNo );
-                } );
-            }
-        };
-        $scope.showImgr2 = function ( GoodsReceiptNoteNo ) {
-            if ( is.not.undefined( GoodsReceiptNoteNo ) && is.not.empty( GoodsReceiptNoteNo ) ) {
-                var objUri = ApiService.Uri('/api/wms/imgr2/transfer');
-                objUri.addSearch( 'GoodsReceiptNoteNo',GoodsReceiptNoteNo);
-                ApiService.Get( objUri, true ).then( function success( result ) {
-                    $scope.Imgr1s = {};
-                    $scope.Imgr2s = result.data.results;
-                    $( '#div-grt-list' ).focus();
-                } );
-            } else {
-                $scope.clear();
-            }
-        };
         $scope.returnMain = function () {
             $state.go( 'index.main', {}, {
                 reload: true

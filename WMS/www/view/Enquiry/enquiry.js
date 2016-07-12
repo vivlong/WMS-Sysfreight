@@ -1,22 +1,31 @@
-appControllers.controller('EnquiryListCtrl', ['$scope', '$stateParams', '$state', 'ApiService',
-    function($scope, $stateParams, $state, ApiService) {
-        $scope.rcbp1 = {};
-        $scope.GinNo = {};
-        $scope.Imgi1s = {};
-        $scope.refreshRcbp1 = function( BusinessPartyName ) {
-            if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
-                var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-                ApiService.Get( strUri, false ).then( function success( result ) {
-                    $scope.Rcbp1s = result.data.results;
+appControllers.controller('EnquiryListCtrl', [
+    '$scope',
+    '$stateParams',
+    '$state',
+    'ApiService',
+    function(
+        $scope,
+        $stateParams,
+        $state,
+        ApiService) {
+        $scope.Impr1 = {};
+        $scope.Impm1 = {};
+        $scope.refreshImpr1 = function( ProductCode ) {
+            if(is.not.undefined(ProductCode) && is.not.empty(ProductCode)){
+                var objUri = ApiService.Uri('/api/wms/impr1');
+                objUri.addSearch('ProductCode',ProductCode);
+                ApiService.Get( objUri, false ).then( function success( result ) {
+                    $scope.Impr1s = result.data.results;
                 } );
             }
         };
-        $scope.refreshGinNos = function(Grn) {
-            if(is.not.undefined(Grn) && is.not.empty(Grn)){
-                var strUri = '/api/wms/imgi1?GoodsIssueNoteNo=' + Grn;
-                ApiService.Get(strUri, true).then(function success(result) {
-                    $scope.GinNos = result.data.results;
-                });
+        $scope.refreshImpm1s = function ( UserDefine1 ) {
+            if ( is.not.undefined( UserDefine1 ) && is.not.empty( UserDefine1 ) ) {
+                var objUri = ApiService.Uri( '/api/wms/impm1' );
+                objUri.addSearch( 'UserDefine1', UserDefine1 );
+                ApiService.Get( objUri, false ).then( function success( result ) {
+                    $scope.Impm1s = result.data.results;
+                } );
             }
         };
         $scope.showDate = function(utc) {

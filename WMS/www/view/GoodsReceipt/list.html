@@ -13,7 +13,7 @@
                     <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowImgr1(Rcbp1.selected.BusinessPartyCode)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
                         <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind-html="Rcbp1.BusinessPartyName"></div>
+                            <div ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                     <!--div id="scrollable-dropdown-menu">
@@ -29,7 +29,7 @@
                     <ui-select theme="bootstrap" ng-model="GrnNo.selected" reset-search-input="true" on-select="GoToDetail(GrnNo.selected)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.GoodsReceiptNoteNo}}</ui-select-match>
                         <ui-select-choices repeat="GrnNo in GrnNos track by $index" refresh="refreshGrnNos($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind="GrnNo.GoodsReceiptNoteNo"></div>
+                            <div ng-bind="GrnNo.GoodsReceiptNoteNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
