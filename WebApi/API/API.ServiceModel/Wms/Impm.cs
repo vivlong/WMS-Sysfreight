@@ -80,10 +80,10 @@ namespace WebApi.ServiceModel.Wms
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
 																{
-																				string strSql = "Select TrxNo, IsNull(BatchNo,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
+																				string strSql = "Select TrxNo, LineItemNo, IsNull(BatchNo,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
 																								"IsNull(ProductName,'') AS ProductName, IsNull(GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(UserDefine1,'') AS UserDefine1," +
 																								"(CASE Impm1.DimensionFlag When '1' THEN Impm1.PackingQty When '2' THEN Impm1.WholeQty ELSE Impm1.LooseQty END) AS Qty, " +
-																								"0 AS QtyBal, 0 AS ScanQty " +
+																								"'' AS FromToStoreNo, 0 AS QtyBal, 0 AS ScanQty " +
 																								"From Impm1 " +
 																								"Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "'";
 																				Results = db.Select<Impm1_Transfer>(strSql);
