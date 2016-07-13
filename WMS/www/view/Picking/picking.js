@@ -5,23 +5,26 @@ appControllers.controller('PickingListCtrl', ['$scope', '$stateParams', '$state'
         $scope.Imgi1s = {};
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
-                var strUri = '/api/wms/rcbp1?BusinessPartyName=' + BusinessPartyName;
-                ApiService.Get( strUri, false ).then( function success( result ) {
+                var objUri = ApiService.Uri('/api/wms/rcbp1');
+                objUri.addSearch('BusinessPartyName',BusinessPartyName);
+                ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
                 } );
             }
         };
         $scope.refreshGinNos = function(Grn) {
             if(is.not.undefined(Grn) && is.not.empty(Grn)){
-                var strUri = '/api/wms/imgi1?GoodsIssueNoteNo=' + Grn;
-                ApiService.Get(strUri, true).then(function success(result) {
+                var objUri = ApiService.Uri('/api/wms/imgi1');
+                objUri.addSearch('GoodsIssueNoteNo', Grn);
+                ApiService.Get(objUri, true).then(function success(result) {
                     $scope.GinNos = result.data.results;
                 });
             }
         };
         $scope.ShowImgi1 = function(CustomerCode) {
-            var strUri = '/api/wms/imgi1?CustomerCode=' + CustomerCode;
-            ApiService.Get(strUri, true).then(function success(result) {
+            var objUri = ApiService.Uri('/api/wms/imgi1');
+            objUri.addSearch('CustomerCode',CustomerCode);
+            ApiService.Get(objUri, true).then(function success(result) {
                 $scope.Imgi1s = result.data.results;
                 if (window.cordova && window.cordova.plugins.Keyboard) {
                     cordova.plugins.Keyboard.close();

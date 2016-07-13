@@ -37,59 +37,8 @@
     <ion-content style="margin-top:100px;">
         <ion-tree-list items="Impm1s" collapsed="true" template-url="view/GoodsTransfer/ion-item.tmpl.html">
         </ion-tree-list>
-        <!--ion-list tabindex="-1">
-            <div class="card" ng-repeat="Imgr2 in Imgr2s">
-                <label class="item item-input">
-                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px; font-size: small;">Product Code : <span ng-bind="Imgr2.ProductCode"></span></span>
-                </label>
-                <label class="item item-input">
-                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px; font-size: small;">Description : <span ng-bind="Imgr2.ProductDescription  | limitTo:25"></span></span>
-                </label>
-                <div class="item item-input row" style="padding:0px;">
-                    <div class="col col-40" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; font-size: small;">Balance : <span ng-bind="Imgr2.Balance - Imgr2.Qty"></span></span>
-                        </label>
-                    </div>
-                    <div class="col col-50" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; font-size: small;">Qty&nbsp;&nbsp;:</span>
-                            <input type="number" id="txt-qty-{{ Imgr2.LineItemNo }}" ng-model="Imgr2.Qty" ng-change="checkQty(Imgr2);" style="padding-bottom: 5px; padding-top: 0px; padding-right: 14px;">
-                        </label>
-                    </div>
-                    <div class="col">
-                        <button class="button button-clear button-small" ng-click="clearInput('qty',Imgr2)"><i class="icon ion-android-close"></i></button>
-                    </div>
-                </div>
-                <div class="item item-input row" style="padding:0px;">
-                    <div class="col col-40" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; font-size: small;">From : <span ng-bind="Imgr2.StoreNo"></span></span>
-                        </label>
-                    </div>
-                    <div class="col col-40" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; font-size: small;">To&nbsp;&nbsp;:</span>
-                            <input type="text" id="txt-storeno-{{ Imgr2.LineItemNo }}" ng-model="Imgr2.NewStoreNo" style="padding-bottom: 5px; padding-top: 0px; padding-right: 14px;">
-                        </label>
-                    </div>
-                    <div class="col col-10">
-                        <button class="button button-clear button-small" ng-click="openCam(Imgr2)"><i class="icon ion-qr-scanner"></i></button>
-                    </div>
-                    <div class="col">
-                        <button class="button button-clear button-small" ng-click="clearInput('storeno',Imgr2)"><i class="icon ion-android-close"></i></button>
-                    </div>
-                </div>
-            </div>
-            <ion-item ng-repeat="Imgr1 in Imgr1s" id="Imgr1-{{ Imgr1.Index }}" class="item-remove-animate item-icon-right" ng-click="GoToImgr2(Imgr1.GoodsReceiptNoteNo)">
-                <p style="font-size:0.8em;">Customer&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.CustomerCode" style="font-size:1.2em;"></span></p>
-                <p style="font-size:0.8em;">GRN&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.GoodsReceiptNoteNo" style="font-size:1.3em;"></span></p>
-                <p style="font-size:0.8em;">Receipt Date&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="showDate(Imgr1.ReceiptDate)" style="font-size:1.1em;"></span></p>
-                <p style="font-size:0.8em;">Ref No&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.RefNo" style="font-size:1.1em;"></span></p>
-            </ion-item>
-        </ion-list-->
     </ion-content>
-    <ion-footer-bar class="bar-positive hide-on-keyboard-open" ng-show="Imgr2s.length > 0">
+    <ion-footer-bar class="bar-positive hide-on-keyboard-open" ng-show="Impm1s.length > 0">
         <div class="button-bar">
             <button class="button icon ion-android-done" ng-click="checkConfirm()">
                 &nbsp;Confirm

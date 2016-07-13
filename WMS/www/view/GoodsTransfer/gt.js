@@ -57,58 +57,46 @@ appControllers.controller( 'GtListCtrl', [
         $scope.showDate = function ( utc ) {
             return moment( utc ).format( 'DD-MMM-YYYY' );
         };
-        /*
-        $scope.GoToDetail = function( Imgr1 ) {
-            if ( Imgr1 != null ) {
-                $state.go( 'putawayDetail', {
-                    'CustomerCode': Imgr1.CustomerCode,
-                    'TrxNo': Imgr1.TrxNo,
-                    'GoodsReceiptNoteNo': Imgr1.GoodsReceiptNoteNo
-                }, {
-                    reload: true
-                } );
-            }
-        };
-        */
         $scope.returnMain = function () {
             $state.go( 'index.main', {}, {
                 reload: true
             } );
         };
         $scope.clear = function () {
-            $scope.Imgr1s = {};
-            $scope.Imgr2s = {};
+            $scope.Impm1s = {};
         };
-        $scope.openCam = function ( imgr2 ) {
-            $cordovaBarcodeScanner.scan().then( function ( imageData ) {
-                $scope.Imgr2s[ imgr2.LineItemNo - 1 ].StoreNo = imageData.text;
-                $( '#txt-storeno-' + imgr2.LineItemNo ).select();
-            }, function ( error ) {
-                $cordovaToast.showShortBottom( error );
-            } );
-        };
-        $scope.clearInput = function ( type, imgr2 ) {
-            if ( is.equal( type, 'qty' ) ) {
-                $scope.Imgr2s[ imgr2.LineItemNo - 1 ].Qty = 0;
-                $( '#txt-qty-' + imgr2.LineItemNo ).select();
-            } else {
-                $scope.Imgr2s[ imgr2.LineItemNo - 1 ].NewStoreNo = '';
-                $( '#txt-storeno-' + imgr2.LineItemNo ).select();
+        $scope.openCam = function ( impm1 ) {
+            if(!ENV.fromWeb){
+                $cordovaBarcodeScanner.scan().then( function ( imageData ) {
+                    $scope.Impm1s[ impm1.LineItemNo - 1 ].FromToStoreNo = imageData.text;
+                    $( '#txt-storeno-' + impm1.LineItemNo ).select();
+                }, function ( error ) {
+                    $cordovaToast.showShortBottom( error );
+                } );
             }
         };
-        $scope.checkQty = function ( imgr2 ) {
-            if ( imgr2.Qty < 0 ) {
-                $scope.Imgr2s[ imgr2.LineItemNo - 1 ].Qty = 0;
+        $scope.clearInput = function ( type, impm1 ) {
+            if ( is.equal( type, 'qty' ) ) {
+                $scope.Impm1s[ impm1impm1.LineItemNo - 1 ].ScanQty = 0;
+                $( '#txt-qty-' + impm1.LineItemNo ).select();
             } else {
-                if ( imgr2.Balance - imgr2.Qty < 0 ) {
-                    $scope.Imgr2s[ imgr2.LineItemNo - 1 ].Qty = $scope.Imgr2s[ imgr2.LineItemNo - 1 ].Balance;
+                $scope.Impm1s[ impm1.LineItemNo - 1 ].FromToStoreNo = '';
+                $( '#txt-storeno-' + impm1.LineItemNo ).select();
+            }
+        };
+        $scope.checkQty = function ( impm1 ) {
+            if ( impm1.ScanQty < 0 ) {
+                $scope.Impm1s[ imgr2.LineItemNo - 1 ].ScanQty = 0;
+            } else {
+                if ( impm1.Qty - impm1.ScanQty < 0 ) {
+                    $scope.Impm1s[ impm1.LineItemNo - 1 ].ScanQty = $scope.Impm1s[ impm1.LineItemNo - 1 ].Qty;
                 }
             }
         };
         $scope.checkConfirm = function () {
             var blnConfirm = false;
-            for ( var i = 0; i < $scope.Imgr2s.length; i++ ) {
-                if ( $scope.Imgr2s[ i ].Qty > 0 && is.not.empty( $scope.Imgr2s[ i ].NewStoreNo ) ) {
+            for ( var i = 0; i < $scope.Impm1s.length; i++ ) {
+                if ( $scope.Impm1s[ i ].ScanQty > 0 && is.not.empty( $scope.Impm1s[ i ].FromToStoreNo ) ) {
                     blnConfirm = true;
                     break;
                 }
@@ -118,32 +106,34 @@ appControllers.controller( 'GtListCtrl', [
                 objUri.addSearch( 'UserID', sessionStorage.getItem( 'UserId' ).toString() );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     var imit1 = result.data.results[ 0 ];
-                    var len = $scope.Imgr2s.length;
+                    var len = $scope.Impm1s.length;
                     if ( imit1.TrxNo > 0 && len > 0 ) {
                         $ionicLoading.show();
                         var LineItemNo = 0;
                         for ( var i = 0; i < len; i++ ) {
-                            var imgr2 = {
-                                TrxNo: $scope.Imgr2s[ i ].TrxNo,
-                                LineItemNo: $scope.Imgr2s[ i ].LineItemNo,
-                                Qty: $scope.Imgr2s[ i ].Qty,
-                                NewStoreNo: $scope.Imgr2s[ i ].NewStoreNo
+                            var impm1 = {
+                                TrxNo: $scope.Impm1s[ i ].TrxNo,
+                                LineItemNo: $scope.Impm1s[ i ].LineItemNo,
+                                Qty: $scope.Impm1s[ i ].ScanQty,
+                                FromToStoreNo: $scope.Impm1s[ i ].FromToStoreNo
                             };
-                            if ( imgr2.Qty > 0 && is.not.empty( imgr2.NewStoreNo ) ) {
+                            if ( impm1.Qty > 0 && is.not.empty( impm1.FromToStoreNo ) ) {
                                 LineItemNo = LineItemNo + 1;
                                 var objUri = ApiService.Uri( '/api/wms/imit2/create' );
                                 objUri.addSearch( 'TrxNo', imit1.TrxNo );
                                 objUri.addSearch( 'LineItemNo', LineItemNo );
-                                objUri.addSearch( 'Imgr2TrxNo', imgr2.TrxNo );
-                                objUri.addSearch( 'Imgr2LineItemNo', imgr2.LineItemNo );
-                                objUri.addSearch( 'NewStoreNo', imgr2.NewStoreNo );
-                                objUri.addSearch( 'Qty', imgr2.Qty );
+                                objUri.addSearch( 'Imgr2TrxNo', impm1.TrxNo );
+                                objUri.addSearch( 'Imgr2LineItemNo', impm1.LineItemNo );
+                                objUri.addSearch( 'NewStoreNo', impm1.FromToStoreNo );
+                                objUri.addSearch( 'Qty', impm1.ScanQty );
                                 objUri.addSearch( 'UpdateBy', sessionStorage.getItem( 'UserId' ).toString() );
                                 ApiService.Get( objUri, false ).then( function success( result ) {} );
                             }
                         }
                         $ionicLoading.hide();
-                        var objUri = '/api/wms/imit1/confirm?TrxNo=' + imit1.TrxNo + '&UpdateBy=' + sessionStorage.getItem( 'UserId' ).toString();
+                        var objUri = ApiService.Uri('/api/wms/imit1/confirm');
+                        objUri.addSearch('TrxNo', imit1.TrxNo);
+                        objUri.addSearch('UpdateBy', sessionStorage.getItem( 'UserId' ).toString());
                         ApiService.Get( objUri, false ).then( function success( result ) {
                             PopupService.Info( popup, 'Comfirm Success' ).then( function () {
                                 $scope.clear();
@@ -160,6 +150,7 @@ appControllers.controller( 'GtListCtrl', [
         };
     } ] );
 
+/*
 appControllers.controller( 'GtFromCtrl', [ '$scope', '$stateParams', '$state', '$http', '$timeout', '$ionicHistory', '$ionicLoading', '$ionicPopup', '$ionicModal', '$cordovaToast', '$cordovaBarcodeScanner', 'ApiService',
     function ( $scope, $stateParams, $state, $http, $timeout, $ionicHistory, $ionicLoading, $ionicPopup, $ionicModal, $cordovaToast, $cordovaBarcodeScanner, ApiService ) {
         var popup = null;
@@ -775,3 +766,4 @@ appControllers.controller( 'GtToCtrl', [ '$scope', '$stateParams', '$state', '$h
         } );
         initImgr2();
     } ] );
+*/
