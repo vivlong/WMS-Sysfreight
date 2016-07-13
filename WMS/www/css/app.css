@@ -1,6 +1,9 @@
 html {
     background-color: #fff;
 }
+.item p {
+    color: #333 !important;
+}
 .app {
     position: relative;
     height: 100%;
