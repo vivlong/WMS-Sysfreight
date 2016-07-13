@@ -33,7 +33,7 @@ appControllers.controller( 'GtListCtrl', [
             }
         };
         $scope.refreshWhwh2 = function ( StoreNo ) {
-            if ( is.not.empty($scope.Whwh1) && is.not.undefined( StoreNo ) && is.not.empty( StoreNo ) ) {
+            if ( is.not.empty( $scope.Whwh1 ) && is.not.undefined( StoreNo ) && is.not.empty( StoreNo ) ) {
                 var objUri = ApiService.Uri( '/api/wms/whwh2' );
                 objUri.addSearch( 'WarehouseCode', $scope.Whwh1.selected.WarehouseCode );
                 objUri.addSearch( 'StoreNo', StoreNo );
@@ -44,7 +44,8 @@ appControllers.controller( 'GtListCtrl', [
         };
         $scope.showImpm1 = function ( StoreNo ) {
             if ( is.not.undefined( StoreNo ) && is.not.empty( StoreNo ) ) {
-                var objUri = ApiService.Uri( '/api/wms/impm1' );
+                var objUri = ApiService.Uri( '/api/wms/impm1/transfer' );
+                objUri.addSearch( 'WarehouseCode', $scope.Whwh1.selected.WarehouseCode );
                 objUri.addSearch( 'StoreNo', StoreNo );
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.Impm1s = result.data.results;
@@ -113,8 +114,8 @@ appControllers.controller( 'GtListCtrl', [
                 }
             }
             if ( blnConfirm ) {
-                var objUri = ApiService.Uri('/api/wms/imit1/create');
-                objUri.addSearch('UserID',sessionStorage.getItem( 'UserId' ).toString());
+                var objUri = ApiService.Uri( '/api/wms/imit1/create' );
+                objUri.addSearch( 'UserID', sessionStorage.getItem( 'UserId' ).toString() );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     var imit1 = result.data.results[ 0 ];
                     var len = $scope.Imgr2s.length;
@@ -130,31 +131,31 @@ appControllers.controller( 'GtListCtrl', [
                             };
                             if ( imgr2.Qty > 0 && is.not.empty( imgr2.NewStoreNo ) ) {
                                 LineItemNo = LineItemNo + 1;
-                                var objUri = ApiService.Uri('/api/wms/imit2/create');
-                                objUri.addSearch('TrxNo',imit1.TrxNo);
-                                objUri.addSearch('LineItemNo',LineItemNo);
-                                objUri.addSearch('Imgr2TrxNo',imgr2.TrxNo);
-                                objUri.addSearch('Imgr2LineItemNo',imgr2.LineItemNo);
-                                objUri.addSearch('NewStoreNo',imgr2.NewStoreNo);
-                                objUri.addSearch('Qty',imgr2.Qty);
-                                objUri.addSearch('UpdateBy', sessionStorage.getItem( 'UserId' ).toString());
+                                var objUri = ApiService.Uri( '/api/wms/imit2/create' );
+                                objUri.addSearch( 'TrxNo', imit1.TrxNo );
+                                objUri.addSearch( 'LineItemNo', LineItemNo );
+                                objUri.addSearch( 'Imgr2TrxNo', imgr2.TrxNo );
+                                objUri.addSearch( 'Imgr2LineItemNo', imgr2.LineItemNo );
+                                objUri.addSearch( 'NewStoreNo', imgr2.NewStoreNo );
+                                objUri.addSearch( 'Qty', imgr2.Qty );
+                                objUri.addSearch( 'UpdateBy', sessionStorage.getItem( 'UserId' ).toString() );
                                 ApiService.Get( objUri, false ).then( function success( result ) {} );
                             }
                         }
                         $ionicLoading.hide();
                         var objUri = '/api/wms/imit1/confirm?TrxNo=' + imit1.TrxNo + '&UpdateBy=' + sessionStorage.getItem( 'UserId' ).toString();
                         ApiService.Get( objUri, false ).then( function success( result ) {
-                            PopupService.Info(popup, 'Comfirm Success').then(function(){
+                            PopupService.Info( popup, 'Comfirm Success' ).then( function () {
                                 $scope.clear();
                                 $scope.returnMain();
-                            });
+                            } );
                         }, function error() {
-                            PopupService.Alert(popup, 'Comfirm Failed').then();
+                            PopupService.Alert( popup, 'Comfirm Failed' ).then();
                         } );
                     }
                 } );
             } else {
-                PopupService.Alert(popup, 'No Product Transfered').then();
+                PopupService.Alert( popup, 'No Product Transfered' ).then();
             }
         };
     } ] );

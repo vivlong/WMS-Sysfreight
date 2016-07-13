@@ -2,6 +2,7 @@ var appControllers = angular.module( 'WMSAPP.controllers', [
     'ionic',
     'ngCordova',
     'ui.select',
+    'ion-tree-list',
     'WMSAPP.config',
     'WMSAPP.services',
     'WMSAPP.factories'

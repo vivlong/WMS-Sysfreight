@@ -4,6 +4,15 @@ html {
 .item p {
     color: #333 !important;
 }
+.depth-2 {
+    padding: 10px !important;
+}
+.item-input input {
+    border: 2px solid #387ef5;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-right-width: 0px;
+}
 .app {
     position: relative;
     height: 100%;

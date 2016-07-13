@@ -13,7 +13,7 @@
                     <ui-select ng-model="Whwh1.selected" theme="bootstrap" reset-search-input="true">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.WarehouseName | limitTo:16}}</ui-select-match>
                         <ui-select-choices repeat="Whwh1 in Whwh1s track by $index" refresh="refreshWhwh1($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind="Whwh1.WarehouseName | highlight: $select.search"></div>
+                            <div ng-bind-html="Whwh1.WarehouseName | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
@@ -26,7 +26,7 @@
                     <ui-select theme="bootstrap" ng-model="Whwh2.selected" reset-search-input="true" on-select="showImpm1(Whwh2.selected.StoreNo)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.StoreNo}}</ui-select-match>
                         <ui-select-choices repeat="Whwh2 in Whwh2s track by $index" refresh="refreshWhwh2($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind="Whwh2.StoreNo | highlight: $select.search"></div>
+                            <div ng-bind-html="Whwh2.StoreNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
@@ -35,7 +35,9 @@
         </div>
     </ion-pane>
     <ion-content style="margin-top:100px;">
-        <ion-list tabindex="-1">
+        <ion-tree-list items="Impm1s" collapsed="true" template-url="view/GoodsTransfer/ion-item.tmpl.html">
+        </ion-tree-list>
+        <!--ion-list tabindex="-1">
             <div class="card" ng-repeat="Imgr2 in Imgr2s">
                 <label class="item item-input">
                     <span class="input-label" style="padding-top:2px; padding-bottom: 2px; font-size: small;">Product Code : <span ng-bind="Imgr2.ProductCode"></span></span>
@@ -85,7 +87,7 @@
                 <p style="font-size:0.8em;">Receipt Date&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="showDate(Imgr1.ReceiptDate)" style="font-size:1.1em;"></span></p>
                 <p style="font-size:0.8em;">Ref No&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Imgr1.RefNo" style="font-size:1.1em;"></span></p>
             </ion-item>
-        </ion-list>
+        </ion-list-->
     </ion-content>
     <ion-footer-bar class="bar-positive hide-on-keyboard-open" ng-show="Imgr2s.length > 0">
         <div class="button-bar">
