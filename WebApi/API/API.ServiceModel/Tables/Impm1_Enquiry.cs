@@ -7,7 +7,11 @@ namespace WebApi.ServiceModel.Tables
 {
 				public class Impm1_Enquiry
 				{
-								public int TrxNo { get; set; }
-								public string UserDefine1 { get; set; }
+								public string ProductCode { get; set; }
+								public string ProductName { get; set; }
+								public string GoodsReceiveorIssueNo { get; set; }
+								public string RefNo { get; set; }
+								public string StoreNo { get; set; }
+								public int BalanceQty { get; set; }
 				}
 }

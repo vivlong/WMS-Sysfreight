@@ -11,11 +11,14 @@ using WebApi.ServiceModel.Tables;
 namespace WebApi.ServiceModel.Wms
 {
 				[Route("/wms/impm1", "Get")]								//impm1?UserDefine1= &WarehouseCode= &StoreNo=
+				[Route("/wms/impm1/enquiry", "Get")]								//impm1?ProductCode= &TrxNo=
     public class Impm : IReturn<CommonResponse>
 				{
 								public string UserDefine1 { get; set; }
 								public string WarehouseCode { get; set; }
 								public string StoreNo { get; set; }
+								public string ProductCode { get; set; }
+								public string TrxNo { get; set; }
     }
 				public class Impm_Logic
     {        
@@ -25,7 +28,7 @@ namespace WebApi.ServiceModel.Wms
 												object Result = null;
 												if (!string.IsNullOrEmpty(request.UserDefine1))
 												{
-																Result = Get_Impm1_Enquiry_List(request);
+																Result = Get_Impm1_UserDefine_List(request);
 												}
 												else
 												{
@@ -33,9 +36,9 @@ namespace WebApi.ServiceModel.Wms
 												}
 												return Result;
 								}
-								public List<Impm1_Enquiry> Get_Impm1_Enquiry_List(Impm request)
+								public List<Impm1_Enquiry_UserDefine> Get_Impm1_UserDefine_List(Impm request)
 								{
-												List<Impm1_Enquiry> Result = null;
+												List<Impm1_Enquiry_UserDefine> Result = null;
 												try
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
@@ -44,7 +47,7 @@ namespace WebApi.ServiceModel.Wms
 																								"From Impm1 " +
 																								"Where Impm1.UserDefine1 LIKE '" + request.UserDefine1 + "%' " +
 																								"Order By Impm1.TrxNo ASC";
-																				Result = db.Select<Impm1_Enquiry>(strSql);
+																				Result = db.Select<Impm1_Enquiry_UserDefine>(strSql);
 																}
 												}
 												catch { throw; }
@@ -70,5 +73,31 @@ namespace WebApi.ServiceModel.Wms
             catch { throw; }
             return Result;
         }
+								public List<Impm1_Enquiry> Get_Impm1_Enquiry_List(Impm request)
+								{
+												List<Impm1_Enquiry> Result = null;
+												try
+												{
+																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+																{
+																				string strSql = "Select IsNull(Impm1.ProductCode,'') AS ProductCode, IsNull(Impm1.ProductName,'') AS ProductName," +
+																								"IsNull(Impm1.GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(Impm1.RefNo,'') AS RefNo," +
+																								"IsNull(Impm1.StoreNo,'') AS StoreNo, " +
+																								"(CASE Impm1.DimensionFlag When '1' THEN Impm1.BalancePackingQty When '2' THEN Impm1.BalanceWholeQty ELSE Impm1.BalanceLooseQty END) AS BalanceQty " +
+																								"From Impm1 ";
+																				if (!string.IsNullOrEmpty(request.ProductCode))
+																				{
+																								strSql = strSql + "Where ProductCode='" + request.ProductCode + "'";
+																				}
+																				else if (!string.IsNullOrEmpty(request.TrxNo))
+																				{
+																								strSql = strSql + "Where TrxNo=" + int.Parse(request.TrxNo);
+																				}
+																				Result = db.Select<Impm1_Enquiry>(strSql);
+																}
+												}
+												catch { throw; }
+												return Result;
+								}
     }
 }
