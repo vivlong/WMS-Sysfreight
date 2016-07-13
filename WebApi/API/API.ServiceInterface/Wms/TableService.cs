@@ -175,9 +175,17 @@ namespace WebApi.ServiceInterface.Wms
 								{
 												if (auth.AuthResult(token, uri))
 												{
-																if (uri.IndexOf("/wms/impm1") > 0)
+																if (uri.IndexOf("/wms/impm1/enquiry") > 0)
 																{
-																				ecr.data.results = impm_Logic.Get_Impm1(request);
+																				ecr.data.results = impm_Logic.Get_Impm1_Enquiry_List(request);
+																}
+																else if (uri.IndexOf("/wms/impm1/transfer") > 0)
+																{
+																				ecr.data.results = impm_Logic.Get_Impm1_Transfer_List(request);
+																}
+																else if (uri.IndexOf("/wms/impm1") > 0)
+																{
+																				ecr.data.results = impm_Logic.Get_Impm1_List(request);
 																}
 																ecr.meta.code = 200;
 																ecr.meta.message = "OK";

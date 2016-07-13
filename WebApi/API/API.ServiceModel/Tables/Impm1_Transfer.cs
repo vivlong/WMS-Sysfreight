@@ -5,13 +5,16 @@ using System.Text;
 
 namespace WebApi.ServiceModel.Tables
 {
-				public class Impm1_Enquiry
+				public class Impm1_Transfer
 				{
+								public int TrxNo { get; set; }
+								public string name { get; set; }
 								public string ProductCode { get; set; }
 								public string ProductName { get; set; }
 								public string GoodsReceiveorIssueNo { get; set; }
-								public string RefNo { get; set; }
-								public string StoreNo { get; set; }
-								public int BalanceQty { get; set; }
+								public string UserDefine1 { get; set; }
+								public int Qty { get; set; }
+								public int QtyBal { get; set; }
+								public int ScanQty { get; set; }
 				}
 }

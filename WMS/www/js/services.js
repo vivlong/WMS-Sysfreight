@@ -570,7 +570,7 @@ appService.service( 'PopupService', [
         $ionicPopup ) {
         this.Alert = function ( popup, title, subtitle, callback ) {
             var deferred = $q.defer();
-            if ( is.null( popup ) ) {
+            if ( is.null( popup ) || is.undefined( popup ) ) {
                 popup = $ionicPopup.alert( {
                     title: title,
                     subTitle: subtitle,
@@ -593,7 +593,7 @@ appService.service( 'PopupService', [
         };
         this.Info = function ( popup, title, subtitle, callback ) {
             var deferred = $q.defer();
-            if ( is.null( popup ) ) {
+            if ( is.null( popup ) || is.undefined( popup ) ) {
                 popup = $ionicPopup.alert( {
                     title: title,
                     subTitle: subtitle,
@@ -616,7 +616,7 @@ appService.service( 'PopupService', [
         };
         this.Show = function ( popup, type, title, subtitle, callback ) {
             var deferred = $q.defer();
-            if ( is.null( popup ) ) {
+            if ( is.null( popup ) || is.undefined( popup ) ) {
                 popup = $ionicPopup.alert( {
                     title: title,
                     subTitle: subtitle,
