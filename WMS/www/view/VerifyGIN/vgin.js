@@ -13,7 +13,7 @@ appControllers.controller( 'VginListCtrl', [
         $scope.imgi1s = {};
         $scope.refreshRcbp1 = function( BusinessPartyName ) {
             if(is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)){
-                var objUri = ApiService.Uri('/api/wms/rcbp1');
+                var objUri = ApiService.Uri( true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName',BusinessPartyName);
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
@@ -22,7 +22,7 @@ appControllers.controller( 'VginListCtrl', [
         };
         $scope.refreshGinNos = function( Grn ) {
             if(is.not.undefined(Grn) && is.not.empty(Grn)){
-                var objUri = ApiService.Uri('/api/wms/imgi1');
+                var objUri = ApiService.Uri( true, '/api/wms/imgi1');
                 objUri.addSearch('GoodsIssueNoteNo', Grn);
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.GinNos = result.data.results;
@@ -30,7 +30,7 @@ appControllers.controller( 'VginListCtrl', [
             }
         };
         $scope.ShowImgi1 = function( Customer ) {
-            var objUri = ApiService.Uri('/api/wms/imgi1');
+            var objUri = ApiService.Uri( true, '/api/wms/imgi1');
             objUri.addSearch('CustomerCode', Customer);
             ApiService.Get( objUri, true ).then( function success( result ) {
                 $scope.imgi1s = result.data.results;
@@ -234,7 +234,7 @@ appControllers.controller( 'VginDetailCtrl', [
             }
         };
         var GetImgi2 = function( GoodsIssueNoteNo ) {
-            var objUri = ApiService.Uri('/api/wms/imgi2/verify');
+            var objUri = ApiService.Uri( true, '/api/wms/imgi2/verify');
             objUri.addSearch('GoodsIssueNoteNo', GoodsIssueNoteNo);
             ApiService.Get( objUri, true ).then( function success( result ) {
                 $scope.Detail.Imgi2s = result.data.results;

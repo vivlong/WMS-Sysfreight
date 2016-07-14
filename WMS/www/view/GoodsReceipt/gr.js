@@ -16,7 +16,7 @@ appControllers.controller( 'GrListCtrl', [
         $scope.Imgr1s = {};
         $scope.refreshRcbp1 = function ( BusinessPartyName ) {
             if ( is.not.undefined( BusinessPartyName ) && is.not.empty( BusinessPartyName ) ) {
-                var objUri = ApiService.Uri( '/api/wms/rcbp1' );
+                var objUri = ApiService.Uri( true, '/api/wms/rcbp1' );
                 objUri.addSearch( 'BusinessPartyName', BusinessPartyName );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
@@ -25,7 +25,7 @@ appControllers.controller( 'GrListCtrl', [
         };
         $scope.refreshGrnNos = function ( Grn ) {
             if ( is.not.undefined( Grn ) && is.not.empty( Grn ) ) {
-                var objUri = ApiService.Uri( '/api/wms/imgr1' );
+                var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
                 objUri.addSearch( 'GoodsReceiptNoteNo', Grn );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
@@ -34,7 +34,7 @@ appControllers.controller( 'GrListCtrl', [
         };
         $scope.ShowImgr1 = function ( Customer ) {
             if ( is.not.undefined( Customer ) && is.not.empty( Customer ) ) {
-                var objUri = ApiService.Uri( '/api/wms/imgr1' );
+                var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
                 objUri.addSearch( 'CustomerCode', Customer );
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;
@@ -431,7 +431,7 @@ appControllers.controller( 'GrDetailCtrl', [
                         SerialNos = SerialNos + ',' + SnArray[ i ];
                     }
                     SerialNos = SerialNos.substr( 1, SerialNos.length );
-                    var objUri = ApiService.Uri('/api/wms/imsn1/create');
+                    var objUri = ApiService.Uri( true, '/api/wms/imsn1/create');
                     objUri.addSearch('ReceiptNoteNo',$scope.Detail.GRN);
                     objUri.addSearch('ReceiptLineItemNo', imgr2.LineItemNo);
                     objUri.addSearch('SerialNos=', SerialNos);
@@ -439,7 +439,7 @@ appControllers.controller( 'GrDetailCtrl', [
                     ApiService.Get( objUri, true ).then( function success( result ) {} );
                 }
             } );
-            var objUri = ApiService.Uri('/api/wms/imgr1/confirm');
+            var objUri = ApiService.Uri( true, '/api/wms/imgr1/confirm');
             objUri.addSearch('TrxNo', $scope.Detail.TrxNo);
             objUri.addSearch('UserId',userID);
             ApiService.Get( objUri, true ).then( function success( result ) {
@@ -449,7 +449,7 @@ appControllers.controller( 'GrDetailCtrl', [
             } );
         };
         var GetImgr2ProductCode = function ( GoodsReceiptNoteNo ) {
-            var objUri = ApiService.Uri('/api/wms/imgr2/receipt');
+            var objUri = ApiService.Uri( true, '/api/wms/imgr2/receipt');
             objUri.addSearch('GoodsReceiptNoteNo',GoodsReceiptNoteNo);
             ApiService.Get( objUri, true ).then( function success( result ) {
                 $scope.Detail.Imgr2s = result.data.results;

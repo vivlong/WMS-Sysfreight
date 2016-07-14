@@ -8,11 +8,31 @@ var appControllers = angular.module( 'WMSAPP.controllers', [
     'WMSAPP.factories'
 ] );
 
-appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state', '$http',
-    '$ionicPlatform', '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion', 'ApiService',
-    function( ENV, $rootScope, $scope, $state, $http, $ionicPlatform, $ionicPopup, $ionicSideMenuDelegate, $cordovaAppVersion, ApiService ) {
-        var alertPopup = null;
-        var alertPopupTitle = '';
+appControllers.controller( 'IndexCtrl', [
+    'ENV',
+    '$rootScope',
+    '$scope',
+    '$state',
+    '$http',
+    '$ionicPlatform',
+    '$ionicPopup',
+    '$ionicSideMenuDelegate',
+    '$cordovaAppVersion',
+    'ApiService',
+    'PopupService',
+    function(
+        ENV,
+        $rootScope,
+        $scope,
+        $state,
+        $http,
+        $ionicPlatform,
+        $ionicPopup,
+        $ionicSideMenuDelegate,
+        $cordovaAppVersion,
+        ApiService,
+        PopupService) {
+        var popup = null;
         $scope.Status = {
             Login: false
         };
@@ -27,8 +47,7 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
         };
         $scope.gotoUpdate = function() {
             if ( !ENV.fromWeb ) {
-                var url = ENV.website + '/' + ENV.updateFile;
-                $http.get( url )
+                $http.get( ApiService.Url(ApiService.Uri( false, '/' + ENV.updateFile)) )
                     .success( function( res ) {
                         var serverAppVersion = res.version;
                         $cordovaAppVersion.getVersionNumber().then( function( version ) {
@@ -38,27 +57,15 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
                                     'Version': serverAppVersion
                                 } );
                             } else {
-                                alertPopupTitle = 'Already the Latest Version!';
-                                alertPopup = $ionicPopup.alert( {
-                                    title: alertPopupTitle,
-                                    okType: 'button-assertive'
-                                } );
+                                PopupService.Alert(popup,'Already the Latest Version!').then();
                             }
                         } );
                     } )
                     .error( function( res ) {
-                        alertPopupTitle = 'Connect Update Server Error!';
-                        alertPopup = $ionicPopup.alert( {
-                            title: alertPopupTitle,
-                            okType: 'button-assertive'
-                        } );
+                        PopupService.Alert(popup, 'Connect Update Server Error!').then();
                     } );
             } else {
-                alertPopupTitle = 'No Updates!';
-                alertPopup = $ionicPopup.alert( {
-                    title: alertPopupTitle,
-                    okType: 'button-calm'
-                } );
+                PopupService.Info(popup, 'No Updates!').then();
             }
         }
         $rootScope.$on( 'logout', function() {
@@ -72,7 +79,7 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
         var writeFile = function ( path, file, data ) {
             $cordovaFile.writeFile( path, file, data, true )
                 .then( function ( success ) {
-                    ApiService.Init();
+                    ApiService.Init(true);
                 }, function ( error ) {
                     $cordovaToast.showShortBottom( error );
                     console.error( error );
@@ -110,7 +117,7 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
                                             if ( is.not.empty( arWebPort[ 1 ] ) ) {
                                                 ENV.port = arWebPort[ 1 ];
                                             }
-                                            ApiService.Init();
+                                            ApiService.Init(true);
                                         } else {
                                             $cordovaFile.removeFile( path, file )
                                                 .then( function ( success ) {
@@ -129,14 +136,18 @@ appControllers.controller( 'IndexCtrl', [ 'ENV', '$rootScope', '$scope', '$state
                             } );
                     } );
             } else {
-                ApiService.Init();
+                ApiService.Init(true);
             }
         } );
     }
 ] );
 
-appControllers.controller( 'SplashCtrl', [ '$state', '$timeout',
-    function( $state, $timeout ) {
+appControllers.controller( 'SplashCtrl', [
+    '$state',
+    '$timeout',
+    function(
+        $state,
+        $timeout ) {
         $timeout( function() {
             $state.go( 'index.login', {}, {
                 reload: true
@@ -144,8 +155,22 @@ appControllers.controller( 'SplashCtrl', [ '$state', '$timeout',
         }, 2000 );
     } ] );
 
-appControllers.controller( 'LoginCtrl', [ '$rootScope', '$scope', '$state', '$stateParams', '$ionicPopup', '$timeout', 'ApiService',
-    function( $rootScope, $scope, $state, $stateParams, $ionicPopup, $timeout, ApiService ) {
+appControllers.controller( 'LoginCtrl', [
+    '$rootScope',
+    '$scope',
+    '$state',
+    '$stateParams',
+    '$ionicPopup',
+    '$timeout',
+    'ApiService',
+    function(
+        $rootScope,
+        $scope,
+        $state,
+        $stateParams,
+        $ionicPopup,
+        $timeout,
+        ApiService ) {
         $scope.logininfo = {};
         if ( undefined == $scope.logininfo.strUserName ) {
             $scope.logininfo.strUserName = '';
@@ -168,28 +193,28 @@ appControllers.controller( 'LoginCtrl', [ '$rootScope', '$scope', '$state', '$st
                 cordova.plugins.Keyboard.close();
             }
             if ( $scope.logininfo.strUserName == '' ) {
-                var alertPopup = $ionicPopup.alert( {
+                var popup = $ionicPopup.alert( {
                     title: 'Please Enter User Name.',
                     okType: 'button-assertive'
                 } );
                 $timeout( function() {
-                    alertPopup.close();
+                    popup.close();
                 }, 2500 );
                 return;
             }
             /*
             if ($scope.logininfo.strPassword == '') {
-                var alertPopup = $ionicPopup.alert({
+                var popup = $ionicPopup.alert({
                     title: 'Please Enter Password.',
                     okType: 'button-assertive'
                 });
                 $timeout(function () {
-                    alertPopup.close();
+                    popup.close();
                 }, 2500);
                 return;
             }
             */
-            var objUri = ApiService.Uri('/api/wms/login/check');
+            var objUri = ApiService.Uri( true, '/api/wms/login/check');
             objUri.addSearch('UserId',$scope.logininfo.strUserName);
             objUri.addSearch('Password',hex_md5( $scope.logininfo.strPassword ));
             ApiService.Get( objUri, true ).then( function success( result ) {
@@ -215,7 +240,7 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
         var writeFile = function ( path, file, data ) {
             $cordovaFile.writeFile( path, file, data, true )
                 .then( function ( success ) {
-                    ApiService.Init();
+                    ApiService.Init(true);
                     $scope.return();
                 }, function ( error ) {
                     $cordovaToast.showShortBottom( error );
@@ -255,7 +280,7 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
                 var file = ENV.rootPath + '/' + ENV.configFile;
                 writeFile( path, file, data );
             } else {
-                ApiService.Init();
+                ApiService.Init(true);
                 $scope.return();
             }
         };
@@ -268,19 +293,31 @@ appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$sta
                 var file = ENV.rootPath + '/' + ENV.configFile;
                 $cordovaFile.removeFile( path, file )
                     .then( function( success ) {
-                        ApiService.Init();
+                        ApiService.Init(true);
                         $scope.save();
                     }, function( error ) {
                         //$cordovaToast.showShortBottom( error );
                     } );
             }else{
-                ApiService.Init();
+                ApiService.Init(true);
             }
         };
     } ] );
 
-appControllers.controller( 'UpdateCtrl', [ 'ENV', '$scope', '$state', '$stateParams', 'DownloadFileService',
-    function( ENV, $scope, $state, $stateParams, DownloadFileService ) {
+appControllers.controller( 'UpdateCtrl', [
+    'ENV',
+    '$scope',
+    '$state',
+    '$stateParams',
+    'DownloadFileService',
+    'ApiService',
+    function(
+        ENV,
+        $scope,
+        $state,
+        $stateParams,
+        DownloadFileService,
+        ApiService ) {
         $scope.strVersion = $stateParams.Version;
         $scope.return = function() {
             onError();
@@ -291,12 +328,19 @@ appControllers.controller( 'UpdateCtrl', [ 'ENV', '$scope', '$state', '$statePar
             } );
         };
         $scope.upgrade = function() {
-            DownloadFileService.Download( ENV.website + '/' + ENV.apkName + '.apk', 'application/vnd.android.package-archive', null, onError, onError );
+            var strFilePath = ApiService.Url(ApiService.Uri(false, '/' + ENV.apkName + '.apk'));
+            DownloadFileService.Download( strFilePath, 'application/vnd.android.package-archive', null, onError, onError );
         };
     } ] );
 
-appControllers.controller( 'MainCtrl', [ '$scope', '$state', '$ionicPopup',
-    function( $scope, $state, $ionicPopup ) {
+appControllers.controller( 'MainCtrl', [
+    '$scope',
+    '$state',
+    '$ionicPopup',
+    function(
+        $scope,
+        $state,
+        $ionicPopup ) {
         $scope.func_Enquiry = function() {
             $state.go( 'enquiryList', {}, {
                 reload: true
