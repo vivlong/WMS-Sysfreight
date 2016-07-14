@@ -8,7 +8,7 @@ namespace WebApi.ServiceModel.Tables
 				public class Impm1_Transfer
 				{
 								public int TrxNo { get; set; }
-								public int LineItemNo { get; set; }
+								public int BatchLineItemNo { get; set; }
 								public string name { get; set; }
 								public string ProductCode { get; set; }
 								public string ProductName { get; set; }

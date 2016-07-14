@@ -7,7 +7,12 @@ namespace WebApi.ServiceModel.Tables
 {
 				public class Impm1
 				{
-								public int TrxNo { get; set; }
-								public string UserDefine1 { get; set; }
+								public string DimensionFlag { get; set; }
+								public string StoreNo { get; set; }
+								public string WarehouseCode { get; set; }
+								public int ProductTrxNo { get; set; }
+								public decimal Volume { get; set; }
+								public decimal Weight { get; set; }
+								public decimal SpaceArea { get; set; }
 				}
 }

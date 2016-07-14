@@ -29,9 +29,9 @@ namespace WebApi.ServiceModel.Wms
 												public List<Impm1_Transfer> tree { get; set; }											
 								}
         public IDbConnectionFactory DbConnectionFactory { get; set; }
-								public List<Impm1> Get_Impm1_List(Impm request)
+								public List<Impm1_UserDefine> Get_Impm1_List(Impm request)
 								{
-												List<Impm1> Result = null;
+												List<Impm1_UserDefine> Result = null;
 												try
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
@@ -40,7 +40,7 @@ namespace WebApi.ServiceModel.Wms
 																								"From Impm1 " +
 																								"Where Impm1.UserDefine1 LIKE '" + request.UserDefine1 + "%' " +
 																								"Order By Impm1.TrxNo ASC";
-																				Result = db.Select<Impm1>(strSql);
+																				Result = db.Select<Impm1_UserDefine>(strSql);
 																}
 												}
 												catch { throw; }
@@ -80,14 +80,14 @@ namespace WebApi.ServiceModel.Wms
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
 																{
-																				string strSql = "Select TrxNo, LineItemNo, IsNull(BatchNo,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
+																				string strSql = "Select TrxNo, BatchLineItemNo, IsNull(BatchNo,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
 																								"IsNull(ProductName,'') AS ProductName, IsNull(GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(UserDefine1,'') AS UserDefine1," +
 																								"(CASE Impm1.DimensionFlag When '1' THEN Impm1.PackingQty When '2' THEN Impm1.WholeQty ELSE Impm1.LooseQty END) AS Qty, " +
 																								"'' AS FromToStoreNo, 0 AS QtyBal, 0 AS ScanQty " +
 																								"From Impm1 " +
 																								"Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "'";
 																				Results = db.Select<Impm1_Transfer>(strSql);
-																				for (int i = 0; i < Results.Count - 1; i++)
+																				for (int i = 0; i < Results.Count; i++)
 																				{
 																								string BatchNo = Results[i].name;
 																								Impm1_Transfer impm1 = Results[i];																								
