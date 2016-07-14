@@ -47,6 +47,8 @@ appControllers.controller( 'PutawayListCtrl', [
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.Rcbp1s = result.data.results;
                 } );
+            } else {
+                $scope.clear();
             }
         };
         $scope.refreshGrnNos = function ( Grn ) {
@@ -57,14 +59,17 @@ appControllers.controller( 'PutawayListCtrl', [
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
                 } );
+            } else {
+                $scope.clear();
             }
         };
         $scope.showImgr1 = function ( Customer ) {
             if ( is.not.undefined( Customer ) && is.not.empty( Customer ) ) {
-                var objUri = ApiService.Uri('/api/wms/imgr1');
-                objUri.addSearch('StatusCode','EXE');
-                objUri.addSearch('CustomerCode', Customer);
+                var objUri = ApiService.Uri( '/api/wms/imgr1' );
+                objUri.addSearch( 'StatusCode', 'EXE' );
+                objUri.addSearch( 'CustomerCode', Customer );
                 ApiService.Get( objUri, true ).then( function success( result ) {
+                    $scope.clear();
                     $scope.Imgr1s = result.data.results;
                 } );
             } else {
@@ -89,10 +94,10 @@ appControllers.controller( 'PutawayListCtrl', [
         */
         $scope.showImgr2 = function ( GoodsReceiptNoteNo ) {
             if ( is.not.undefined( GoodsReceiptNoteNo ) && is.not.empty( GoodsReceiptNoteNo ) ) {
-                var objUri = ApiService.Uri('/api/wms/imgr2/putaway');
-                objUri.addSearch('GoodsReceiptNoteNo',GoodsReceiptNoteNo);
+                var objUri = ApiService.Uri( '/api/wms/imgr2/putaway' );
+                objUri.addSearch( 'GoodsReceiptNoteNo', GoodsReceiptNoteNo );
                 ApiService.Get( objUri, true ).then( function success( result ) {
-                    $scope.Imgr1s = {};
+                    $scope.clear();
                     $scope.Imgr2s = result.data.results;
                     $( '#div-grt-list' ).focus();
                 } );
@@ -110,12 +115,14 @@ appControllers.controller( 'PutawayListCtrl', [
             $scope.Imgr2s = {};
         };
         $scope.openCam = function ( imgr2 ) {
-            $cordovaBarcodeScanner.scan().then( function ( imageData ) {
-                $scope.Imgr2s[ imgr2.LineItemNo - 1 ].StoreNo = imageData.text;
-                $( '#txt-storeno-' + imgr2.LineItemNo ).select();
-            }, function ( error ) {
-                $cordovaToast.showShortBottom( error );
-            } );
+            if(!ENV.fromWeb){
+                $cordovaBarcodeScanner.scan().then( function ( imageData ) {
+                    $scope.Imgr2s[ imgr2.LineItemNo - 1 ].StoreNo = imageData.text;
+                    $( '#txt-storeno-' + imgr2.LineItemNo ).select();
+                }, function ( error ) {
+                    $cordovaToast.showShortBottom( error );
+                } );
+            }
         };
         $scope.clearInput = function ( imgr2 ) {
             $scope.Imgr2s[ imgr2.LineItemNo - 1 ].StoreNo = '';
@@ -139,13 +146,13 @@ appControllers.controller( 'PutawayListCtrl', [
             }
             if ( blnDiscrepancies ) {
                 $ionicLoading.hide();
-                PopupService.Alert(popup, 'Some Products Has Not Yet Putaway').then();
+                PopupService.Alert( popup, 'Some Products Has Not Yet Putaway' ).then();
             } else {
                 confirm();
             }
         };
     } ] );
-
+/*
 appControllers.controller( 'PutawayDetailCtrl', [ '$scope', '$stateParams', '$state', '$timeout', '$ionicHistory', '$ionicLoading', '$ionicPopup', '$ionicModal', '$cordovaToast', '$cordovaBarcodeScanner', 'ApiService',
     function ( $scope, $stateParams, $state, $timeout, $ionicHistory, $ionicLoading, $ionicPopup, $ionicModal, $cordovaToast, $cordovaBarcodeScanner, ApiService ) {
         var popup = null;
@@ -537,3 +544,4 @@ appControllers.controller( 'PutawayDetailCtrl', [ '$scope', '$stateParams', '$st
             }
         } );
     } ] );
+*/

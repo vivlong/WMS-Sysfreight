@@ -67,7 +67,7 @@ appService.service( 'ApiService', [
                     if ( blnShowLoad ) {
                         $ionicLoading.hide();
                     }
-                    if ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) {
+                    if ( is.equal( result.meta.code, 200 ) && (is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) ) {
                         deferred.resolve( result );
                     } else {
                         deferred.reject( result );
@@ -105,7 +105,7 @@ appService.service( 'ApiService', [
                         $ionicLoading.hide();
                     }
                     var result = response.data;
-                    if ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) {
+                    if ( is.equal( result.meta.code, 200 ) && (is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) ) {
                         deferred.resolve( result );
                     } else {
                         deferred.reject( result );
@@ -251,7 +251,7 @@ appService.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '$
         this.Delete = function ( table, key, value ) {
             var deferred = $q.defer();
             var strSql = 'Delete From ' + table;
-            if ( is.not.empty( key ) && is.not.undefined( value ) ) {
+            if ( is.not.undefined(key) && is.not.empty( key ) && is.not.undefined( value ) && is.not.empty( value )) {
                 if ( is.string( value ) ) {
                     value = '\'' + value + '\'';
                 }
