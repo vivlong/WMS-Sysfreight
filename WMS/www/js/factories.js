@@ -96,6 +96,7 @@ appFactory.factory( 'TABLE_DB', function () {
             ProductTrxNo:'INT',
             ProductCode:'TEXT',
             ProductDescription:'TEXT',
+            StoreNo:'TEXT',
             SerialNoFlag:'TEXT',
             SerialNo:'TEXT',
             BarCode:'TEXT',

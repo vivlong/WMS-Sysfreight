@@ -12,17 +12,16 @@ namespace WebApi.ServiceModel.Wms
 {
 				[Route("/wms/imit1/create", "Get")]					//create?UserID=
 				[Route("/wms/imit1/confirm", "Get")]				//confirm?TrxNo= &UpdateBy=
-				[Route("/wms/imit2/create", "Get")]					//create?TrxNo= &LineItemNo= &Imgr2TrxNo= &Imgr2LineItemNo= &NewStoreNo= &Qty= &UpdateBy= 
+				[Route("/wms/imit2/create", "Get")]					//create?TrxNo= &LineItemNo= &Impm1TrxNo= &NewStoreNo= &Qty= &UpdateBy= 
 				public class Imit : IReturn<CommonResponse>
     {
 								public string UserID { get; set; }
-								public string Imgr2TrxNo { get; set; }
-								public string Imgr2LineItemNo { get; set; }
 								public string TrxNo { get; set; }
+								public string UpdateBy { get; set; }
+								public string Impm1TrxNo { get; set; }
 								public string LineItemNo { get; set; }
 								public string NewStoreNo { get; set; }
 								public string Qty { get; set; }
-								public string UpdateBy { get; set; }
     }
 				public class Imit_Logic
     {
@@ -81,13 +80,13 @@ namespace WebApi.ServiceModel.Wms
 												{
 																using (var db = DbConnectionFactory.OpenDbConnection())
 																{
-																				string strSql = "Select Imgr2.* " +
-																							"From Imgr2 " +
-																							"Where Imgr2.TrxNo=" + int.Parse(request.Imgr2TrxNo) + " And Imgr2.LineItemNo=" + int.Parse(request.Imgr2LineItemNo);
-																				List<Imgr2> imgr2s = db.Select<Imgr2>(strSql);
-																				if (imgr2s.Count > 0)
+																				string strSql = "Select Impm1.* " +
+																							"From Impm1 " +
+																							"Where Impm1.TrxNo=" + int.Parse(request.Impm1TrxNo);
+																				List<Impm1> impm1s = db.Select<Impm1>(strSql);
+																				if (impm1s.Count > 0)
 																				{
-																								switch (imgr2s[0].DimensionFlag)
+																								switch (impm1s[0].DimensionFlag)
 																								{
 																												case "1":
 																																db.Insert(
@@ -95,16 +94,16 @@ namespace WebApi.ServiceModel.Wms
 																																				{
 																																								TrxNo = int.Parse(request.TrxNo),
 																																								LineItemNo = int.Parse(request.LineItemNo),
-																																								MovementTrxNo = imgr2s[0].MovementTrxNo,
+																																								MovementTrxNo = int.Parse(request.Impm1TrxNo),
 																																								NewStoreNo = request.NewStoreNo,
-																																								NewWarehouseCode = imgr2s[0].WarehouseCode,
-																																								StoreNo = imgr2s[0].StoreNo,
-																																								WarehouseCode = imgr2s[0].WarehouseCode,
-																																								ProductTrxNo = imgr2s[0].ProductTrxNo,
+																																								NewWarehouseCode = impm1s[0].WarehouseCode,
+																																								StoreNo = impm1s[0].StoreNo,
+																																								WarehouseCode = impm1s[0].WarehouseCode,
+																																								ProductTrxNo = impm1s[0].ProductTrxNo,
 																																								PackingQty = int.Parse(request.Qty),
-																																								Volume = imgr2s[0].Volume,
-																																								Weight = imgr2s[0].Weight,
-																																								SpaceArea = imgr2s[0].SpaceArea,
+																																								Volume = impm1s[0].Volume,
+																																								Weight = impm1s[0].Weight,
+																																								SpaceArea = impm1s[0].SpaceArea,
 																																								UpdateBy = request.UpdateBy
 																																				}
 																																);
@@ -117,15 +116,15 @@ namespace WebApi.ServiceModel.Wms
 																																								LineItemNo = int.Parse(request.LineItemNo),
 																																								NewStoreNo = request.NewStoreNo,
 																																								UpdateBy = request.UpdateBy,
-																																								MovementTrxNo = imgr2s[0].MovementTrxNo,
-																																								NewWarehouseCode = imgr2s[0].WarehouseCode,
-																																								StoreNo = imgr2s[0].StoreNo,
-																																								WarehouseCode = imgr2s[0].WarehouseCode,
-																																								ProductTrxNo = imgr2s[0].ProductTrxNo,
+																																								MovementTrxNo = int.Parse(request.Impm1TrxNo),
+																																								NewWarehouseCode = impm1s[0].WarehouseCode,
+																																								StoreNo = impm1s[0].StoreNo,
+																																								WarehouseCode = impm1s[0].WarehouseCode,
+																																								ProductTrxNo = impm1s[0].ProductTrxNo,
 																																								WholeQty = int.Parse(request.Qty),
-																																								Volume = imgr2s[0].Volume,
-																																								Weight = imgr2s[0].Weight,
-																																								SpaceArea = imgr2s[0].SpaceArea
+																																								Volume = impm1s[0].Volume,
+																																								Weight = impm1s[0].Weight,
+																																								SpaceArea = impm1s[0].SpaceArea
 																																				}
 																																);
 																																break;
@@ -137,15 +136,15 @@ namespace WebApi.ServiceModel.Wms
 																																								LineItemNo = int.Parse(request.LineItemNo),
 																																								NewStoreNo = request.NewStoreNo,
 																																								UpdateBy = request.UpdateBy,
-																																								MovementTrxNo = imgr2s[0].MovementTrxNo,
-																																								NewWarehouseCode = imgr2s[0].WarehouseCode,
-																																								StoreNo = imgr2s[0].StoreNo,
-																																								WarehouseCode = imgr2s[0].WarehouseCode,
-																																								ProductTrxNo = imgr2s[0].ProductTrxNo,
+																																								MovementTrxNo = int.Parse(request.Impm1TrxNo),
+																																								NewWarehouseCode = impm1s[0].WarehouseCode,
+																																								StoreNo = impm1s[0].StoreNo,
+																																								WarehouseCode = impm1s[0].WarehouseCode,
+																																								ProductTrxNo = impm1s[0].ProductTrxNo,
 																																								LooseQty = int.Parse(request.Qty),
-																																								Volume = imgr2s[0].Volume,
-																																								Weight = imgr2s[0].Weight,
-																																								SpaceArea = imgr2s[0].SpaceArea
+																																								Volume = impm1s[0].Volume,
+																																								Weight = impm1s[0].Weight,
+																																								SpaceArea = impm1s[0].SpaceArea
 																																				}
 																																);
 																																break;

@@ -54,6 +54,7 @@ app.run( [
                 StatusBar.styleDefault();
             }
             SqlService.Init().then(function(res){
+                console.log('DB initialized');
                 SqlService.Drop( 'Imgr2_Receipt' ).then( function ( res ) {
                     SqlService.Create( 'Imgr2_Receipt', TABLE_DB.Imgr2_Receipt ).then( function ( res ) {
 

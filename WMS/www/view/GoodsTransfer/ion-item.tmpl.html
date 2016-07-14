@@ -68,7 +68,7 @@
                     <p>Qty<span class="pull-right">:&nbsp;</p>
                 </div>
                 <div class="col-47">
-                    <input type="number" id="txt-qty-{{ item.LineItemNo }}" ng-model="item.ScanQty" ng-change="checkQty(item);" style="padding-right:1em;padding-top: 0px;">
+                    <input type="number" id="txt-qty-{{ item.BatchLineItemNo }}" ng-model="item.ScanQty" ng-change="checkQty(item);" style="padding-right:1em;padding-top: 0px;">
                 </div>
                 <div class="col-20">
                     <button class="button button-clear button-small" ng-click="clearInput('qty',item)">
@@ -85,7 +85,7 @@
         <div class="col-67">
             <div class="row" style="margin-left:0px;">
                 <div class="col col-60">
-                    <input type="text" id="txt-storeno-{{ item.LineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;">
+                    <input type="text" id="txt-storeno-{{ item.BatchLineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;">
                 </div>
                 <div class="col col-20">
                     <button class="button button-clear button-small" ng-click="openCam(item)">
