@@ -25,7 +25,7 @@ appControllers.controller( 'GtListCtrl', [
         $scope.Impm1s = {};
         $scope.refreshWhwh1 = function ( WarehouseName ) {
             if ( is.not.undefined( WarehouseName ) && is.not.empty( WarehouseName ) ) {
-                var objUri = ApiService.Uri( '/api/wms/whwh1' );
+                var objUri = ApiService.Uri( true, '/api/wms/whwh1' );
                 objUri.addSearch( 'WarehouseName', WarehouseName );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.Whwh1s = result.data.results;
@@ -36,7 +36,7 @@ appControllers.controller( 'GtListCtrl', [
         };
         $scope.refreshWhwh2 = function ( StoreNo ) {
             if ( is.not.empty( $scope.Whwh1 ) && is.not.undefined( StoreNo ) && is.not.empty( StoreNo ) ) {
-                var objUri = ApiService.Uri( '/api/wms/whwh2' );
+                var objUri = ApiService.Uri( true, '/api/wms/whwh2' );
                 objUri.addSearch( 'WarehouseCode', $scope.Whwh1.selected.WarehouseCode );
                 objUri.addSearch( 'StoreNo', StoreNo );
                 ApiService.Get( objUri, false ).then( function success( result ) {
@@ -46,7 +46,7 @@ appControllers.controller( 'GtListCtrl', [
         };
         $scope.showImpm1 = function ( StoreNo ) {
             if ( is.not.undefined( StoreNo ) && is.not.empty( StoreNo ) ) {
-                var objUri = ApiService.Uri( '/api/wms/impm1/transfer' );
+                var objUri = ApiService.Uri( true, '/api/wms/impm1/transfer' );
                 objUri.addSearch( 'WarehouseCode', $scope.Whwh1.selected.WarehouseCode );
                 objUri.addSearch( 'StoreNo', StoreNo );
                 ApiService.Get( objUri, true ).then( function success( result ) {
@@ -109,7 +109,7 @@ appControllers.controller( 'GtListCtrl', [
                 }
             }
             if ( blnConfirm ) {
-                var objUri = ApiService.Uri( '/api/wms/imit1/create' );
+                var objUri = ApiService.Uri( true, '/api/wms/imit1/create' );
                 objUri.addSearch( 'UserID', sessionStorage.getItem( 'UserId' ).toString() );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     var imit1 = result.data.results[ 0 ];
@@ -128,7 +128,7 @@ appControllers.controller( 'GtListCtrl', [
                                 };
                                 if ( impm1.Qty > 0 && is.not.empty( impm1.FromToStoreNo ) ) {
                                     LineItemNo = LineItemNo + 1;
-                                    var objUri = ApiService.Uri( '/api/wms/imit2/create' );
+                                    var objUri = ApiService.Uri( true, '/api/wms/imit2/create' );
                                     objUri.addSearch( 'TrxNo', imit1.TrxNo );
                                     objUri.addSearch( 'LineItemNo', LineItemNo );
                                     objUri.addSearch( 'Impm1TrxNo', impm1.TrxNo );
@@ -137,7 +137,7 @@ appControllers.controller( 'GtListCtrl', [
                                     objUri.addSearch( 'UpdateBy', sessionStorage.getItem( 'UserId' ).toString() );
                                     ApiService.Get( objUri, false ).then( function success( result ) {
                                         if( is.equal(node,$scope.Impm1s.length-1) && is.equal(i,len-1) ){
-                                            var objUri = ApiService.Uri('/api/wms/imit1/confirm');
+                                            var objUri = ApiService.Uri( true, '/api/wms/imit1/confirm');
                                             objUri.addSearch('TrxNo', imit1.TrxNo);
                                             objUri.addSearch('UpdateBy', sessionStorage.getItem( 'UserId' ).toString());
                                             ApiService.Get( objUri, false ).then( function success( result ) {

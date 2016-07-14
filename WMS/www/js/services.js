@@ -24,8 +24,8 @@ appService.service( 'ApiService', [
         PopupService ) {
         var parts = {},
             folder = '';
-        this.Init = function () {
-            var url = ENV.api;
+        this.Init = function ( blnApi ) {
+            var url = blnApi ? ENV.api : ENV.website;
             var urls = url.split( '/' );
             parts = {
                 protocol: null,
@@ -44,12 +44,19 @@ appService.service( 'ApiService', [
             }
             folder = parts.path;
         };
-        this.Uri = function ( path ) {
+        this.Uri = function ( blnApi, path ) {
             if ( is.empty( parts ) ) {
-                this.Init();
+                this.Init( blnApi );
             }
             parts.path = folder + path;
             return new URI( URI.build( parts ) );
+        };
+        this.Url = function ( uri ) {
+            if ( is.object( uri ) ) {
+                return uri.normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
+            } else {
+                return '';
+            }
         };
         this.Post = function ( uri, requestData, blnShowLoad, popup ) {
             if ( blnShowLoad ) {
@@ -67,7 +74,7 @@ appService.service( 'ApiService', [
                     if ( blnShowLoad ) {
                         $ionicLoading.hide();
                     }
-                    if ( is.equal( result.meta.code, 200 ) && (is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) ) {
+                    if ( is.equal( result.meta.code, 200 ) && ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) ) {
                         deferred.resolve( result );
                     } else {
                         deferred.reject( result );
@@ -105,7 +112,7 @@ appService.service( 'ApiService', [
                         $ionicLoading.hide();
                     }
                     var result = response.data;
-                    if ( is.equal( result.meta.code, 200 ) && (is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) ) {
+                    if ( is.equal( result.meta.code, 200 ) && ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) ) {
                         deferred.resolve( result );
                     } else {
                         deferred.reject( result );
@@ -131,8 +138,22 @@ appService.service( 'ApiService', [
     }
 ] );
 
-appService.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '$cordovaSQLite', '$cordovaToast', 'TABLE_DB', 'PopupService',
-    function ( $q, ENV, $timeout, $ionicLoading, $cordovaSQLite, $cordovaToast, TABLE_DB, PopupService ) {
+appService.service( 'SqlService', [
+    '$q',
+    'ENV',
+    '$timeout',
+    '$ionicLoading',
+    '$cordovaSQLite',
+    '$cordovaToast',
+    'PopupService',
+    function (
+        $q,
+        ENV,
+        $timeout,
+        $ionicLoading,
+        $cordovaSQLite,
+        $cordovaToast,
+        PopupService ) {
         var db_websql, db_sqlite;
         this.Init = function () {
             var deferred = $q.defer();
@@ -251,7 +272,7 @@ appService.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '$
         this.Delete = function ( table, key, value ) {
             var deferred = $q.defer();
             var strSql = 'Delete From ' + table;
-            if ( is.not.undefined(key) && is.not.empty( key ) && is.not.undefined( value ) && is.not.empty( value )) {
+            if ( is.not.undefined( key ) && is.not.empty( key ) && is.not.undefined( value ) && is.not.empty( value ) ) {
                 if ( is.string( value ) ) {
                     value = '\'' + value + '\'';
                 }
@@ -528,11 +549,27 @@ appService.service( 'PopupService', [
         };
     } ] );
 
-appService.service( 'DownloadFileService', [ 'ENV', '$http', '$timeout', '$ionicLoading', '$cordovaToast', '$cordovaFile', '$cordovaFileTransfer', '$cordovaFileOpener2',
-    function ( ENV, $http, $timeout, $ionicLoading, $cordovaToast, $cordovaFile, $cordovaFileTransfer, $cordovaFileOpener2 ) {
+appService.service( 'DownloadFileService', [
+    'ENV',
+    '$http',
+    '$timeout',
+    '$ionicLoading',
+    '$cordovaToast',
+    '$cordovaFile',
+    '$cordovaFileTransfer',
+    '$cordovaFileOpener2',
+    function (
+        ENV,
+        $http,
+        $timeout,
+        $ionicLoading,
+        $cordovaToast,
+        $cordovaFile,
+        $cordovaFileTransfer,
+        $cordovaFileOpener2 ) {
         this.Download = function ( url, fileName, fileType, onPlatformError, onCheckError, onDownloadError ) {
             $ionicLoading.show( {
-                template: "Download  0%"
+                template: 'Download  0%'
             } );
             var blnError = false;
             if ( !ENV.fromWeb ) {
@@ -565,7 +602,7 @@ appService.service( 'DownloadFileService', [ 'ENV', '$http', '$timeout', '$ionic
                         $timeout( function () {
                             var downloadProgress = ( progress.loaded / progress.total ) * 100;
                             $ionicLoading.show( {
-                                template: "Download  " + Math.floor( downloadProgress ) + "%"
+                                template: 'Download  ' + Math.floor( downloadProgress ) + '%'
                             } );
                             if ( downloadProgress > 99 ) {
                                 $ionicLoading.hide();
