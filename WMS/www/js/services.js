@@ -511,7 +511,7 @@ appService.service( 'PopupService', [
             }
             return deferred.promise;
         };
-        this.Confirm = function ( popup, type, title, template ) {
+        this.Confirm = function ( popup, title, template ) {
             var deferred = $q.defer();
             if ( is.null( popup ) || is.undefined( popup ) ) {
                 popup = $ionicPopup.confirm( {

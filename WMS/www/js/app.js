@@ -23,6 +23,7 @@ app.run( [
     '$cordovaToast',
     '$cordovaFile',
     'SqlService',
+    'PopupService',
     'TABLE_DB',
     function (
         ENV,
@@ -38,6 +39,7 @@ app.run( [
         $cordovaToast,
         $cordovaFile,
         SqlService,
+        PopupService,
         TABLE_DB ) {
         if ( window.cordova ) {
             ENV.fromWeb = false;
@@ -83,11 +85,9 @@ app.run( [
             });
         } );
         $ionicPlatform.registerBackButtonAction( function ( e ) {
-            /*
             if ($cordovaKeyboard.isVisible()) {
                 $cordovaKeyboard.close();
             }
-            */
             // Is there a page to go back to $state.include
             if ( $state.includes( 'index.main' ) || $state.includes( 'index.login' ) || $state.includes( 'splash' ) ) {
                 if ( $rootScope.backButtonPressedOnceToExit ) {
@@ -101,24 +101,29 @@ app.run( [
                 }
             } else if (
                 $state.includes( 'enquiryList' ) ||
-                $state.includes( 'grDetail' ) ||
-                $state.includes( 'putawayDetail' ) ||
-                $state.includes( 'gtList' ) ||
+                $state.includes( 'grList' ) ||
                 $state.includes( 'pickingDetail' ) ||
+                $state.includes( 'gtList' ) ||
                 $state.includes( 'vginDetail' ) ) {
                 $state.go( 'index.main', {}, {
                     reload: true
                 } );
-            } else if ( $ionicHistory.backView() ) {
-                $ionicHistory.goBack();
             } else if ( $state.includes( 'grDetail' ) ) {
                 $state.go( 'grList', {} );
-            } else if ( $state.includes( 'putawayDetail' ) ) {
-                $state.go( 'putawayList', {} );
             } else if ( $state.includes( 'pickingDetail' ) ) {
                 $state.go( 'pickingList', {} );
             } else if ( $state.includes( 'vginDetail' ) ) {
                 $state.go( 'vginList', {} );
+            } else if ( $state.includes( 'putawayList' ) ) {
+                PopupService.Confirm(null,'Return','Are you sure to return?').then(function(res){
+                    if(res){
+                        $state.go( 'index.main', {}, {
+                            reload: true
+                        } );
+                    }
+                });
+            } else if ( $ionicHistory.backView() ) {
+                $ionicHistory.goBack();
             } else {
                 // This is the last page: Show confirmation popup
                 $rootScope.backButtonPressedOnceToExit = true;
@@ -286,12 +291,6 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                 cache: 'false',
                 templateUrl: 'view/Putaway/list.html',
                 controller: 'PutawayListCtrl'
-            } )
-            .state( 'putawayDetail', {
-                url: '/putaway/detail/:CustomerCode/:TrxNo/:GoodsReceiptNoteNo',
-                cache: 'false',
-                templateUrl: 'view/Putaway/detail.html',
-                controller: 'PutawayDetailCtrl'
             } )
             .state( 'gtList', {
                 url: '/gt/list',

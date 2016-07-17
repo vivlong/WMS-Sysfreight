@@ -36,13 +36,57 @@
         </div>
     </ion-pane>
     <ion-content style="margin-top:100px;">
-        <ion-list id="div-vgin-list" tabindex="-1">
-            <ion-item ng-repeat="imgi1 in imgi1s" class="item-remove-animate item-icon-right" ng-click="GoToDetail(imgi1)">
-                <p style="font-size:0.8em;">Customer&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="imgi1.CustomerCode" style="font-size:1.2em;"></span></p>
-                <p style="font-size:0.8em;">GIN&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="imgi1.GoodsIssueNoteNo" style="font-size:1.3em;"></span></p>
-                <p style="font-size:0.8em;">Issue Date&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="showDate(imgi1.IssueDateTime)" style="font-size:1.1em;"></span></p>
-                <p style="font-size:0.8em;">Ref No&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="imgi1.RefNo" style="font-size:1.1em;"></span></p>
-            </ion-item>
+        <ion-list>
+            <div class="card" ng-repeat="imgi1 in imgi1s" id="Imgi1-{{ Imgi1.Index }}" ng-click="GoToDetail(imgi1)">
+                <div class="item item-input">
+                    <div class="col-33">
+                        <p>Customer<span class="pull-right">:&nbsp;</span></p>
+                    </div>
+                    <div class="col-67">
+                        <div class="item-text-wrap">
+                            <p>
+                                <span ng-bind="imgi1.CustomerCode"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="item item-input">
+                    <div class="col-33">
+                        <p>GIN No<span class="pull-right">:&nbsp;</span></p>
+                    </div>
+                    <div class="col-67">
+                        <div class="item-text-wrap">
+                            <p>
+                                <span ng-bind="imgi1.GoodsIssueNoteNo"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="item item-input">
+                    <div class="col-33">
+                        <p>Issue Date<span class="pull-right">:&nbsp;</span></p>
+                    </div>
+                    <div class="col-67">
+                        <div class="item-text-wrap">
+                            <p>
+                                <span ng-bind="showDate(imgi1.IssueDateTime)"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="item item-input">
+                    <div class="col-33">
+                        <p>Ref No<span class="pull-right">:&nbsp;</span></p>
+                    </div>
+                    <div class="col-67">
+                        <div class="item-text-wrap">
+                            <p>
+                                <span ng-bind="imgi1.RefNo"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </ion-list>
     </ion-content>
 </ion-view>

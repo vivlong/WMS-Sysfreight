@@ -18,6 +18,7 @@ appControllers.controller( 'IndexCtrl', [
     '$ionicPopup',
     '$ionicSideMenuDelegate',
     '$cordovaAppVersion',
+    '$cordovaFile',
     'ApiService',
     'PopupService',
     function(
@@ -30,6 +31,7 @@ appControllers.controller( 'IndexCtrl', [
         $ionicPopup,
         $ionicSideMenuDelegate,
         $cordovaAppVersion,
+        $cordovaFile,
         ApiService,
         PopupService) {
         var popup = null;
@@ -228,8 +230,24 @@ appControllers.controller( 'LoginCtrl', [
         };
     } ] );
 
-appControllers.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$cordovaToast', '$cordovaFile',
-    function( ENV, $rootScope,  $scope, $state, $ionicHistory, $ionicPopup, $cordovaToast, $cordovaFile ) {
+appControllers.controller( 'SettingCtrl', [
+    'ENV',
+    '$scope',
+    '$state',
+    '$ionicHistory',
+    '$ionicPopup',
+    '$cordovaToast',
+    '$cordovaFile',
+    'ApiService',
+    function(
+        ENV,
+        $scope,
+        $state,
+        $ionicHistory,
+        $ionicPopup,
+        $cordovaToast,
+        $cordovaFile,
+        ApiService ) {
         $scope.Setting = {
             Version:    ENV.version,
             WebApiURL:  ENV.api,
