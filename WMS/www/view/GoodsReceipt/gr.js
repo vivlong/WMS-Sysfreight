@@ -3,14 +3,15 @@ appControllers.controller( 'GrListCtrl', [
     '$scope',
     '$stateParams',
     '$state',
+    '$cordovaKeyboard',
     'ApiService',
     function (
         ENV,
         $scope,
         $stateParams,
         $state,
+        $cordovaKeyboard,
         ApiService ) {
-        var popup = null;
         $scope.Rcbp1 = {};
         $scope.GrnNo = {};
         $scope.Imgr1s = {};
@@ -38,11 +39,10 @@ appControllers.controller( 'GrListCtrl', [
                 objUri.addSearch( 'CustomerCode', Customer );
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;
-                    if ( window.cordova && window.cordova.plugins.Keyboard ) {
-                        cordova.plugins.Keyboard.close();
-                    }
-                    $( '#div-grt-list' ).focus();
                 } );
+            }
+            if(!ENV.fromWeb){
+                $cordovaKeyboard.close();
             }
         };
         $scope.showDate = function ( utc ) {
@@ -64,12 +64,6 @@ appControllers.controller( 'GrListCtrl', [
                 reload: true
             } );
         };
-        $( '#div-list-rcbp' ).on( 'focus', ( function () {
-            if ( window.cordova && window.cordova.plugins.Keyboard ) {
-                cordova.plugins.Keyboard.close();
-            }
-        } ) );
-        $( '#div-list-rcbp' ).focus();
         /*
         var BhEngine = new Bloodhound( {
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace( 'value' ),
@@ -123,6 +117,7 @@ appControllers.controller( 'GrListCtrl', [
 ] );
 
 appControllers.controller( 'GrDetailCtrl', [
+    'ENV',
     '$scope',
     '$stateParams',
     '$state',
@@ -139,6 +134,7 @@ appControllers.controller( 'GrDetailCtrl', [
     'ApiService',
     'PopupService',
     function (
+        ENV,
         $scope,
         $stateParams,
         $state,
@@ -148,7 +144,7 @@ appControllers.controller( 'GrDetailCtrl', [
         $ionicLoading,
         $ionicPopup,
         $ionicModal,
-        $$cordovaKeyboard,
+        $cordovaKeyboard,
         $cordovaToast,
         $cordovaBarcodeScanner,
         SqlService,
@@ -189,7 +185,6 @@ appControllers.controller( 'GrDetailCtrl', [
             if ( is.equal( imgr2.SerialNoFlag, 'Y' ) ) {
                 $scope.Detail.Scan.Qty = imgr2.ScanQty;
                 $( '#txt-sn' ).removeAttr( 'readonly' );
-                $( '#txt-sn' ).select();
             } else {
                 imgr2.ScanQty += 1;
                 hmImgr2.remove( barcode );
@@ -223,14 +218,12 @@ appControllers.controller( 'GrDetailCtrl', [
             imgr2.ScanQty += 1;
             hmImgr2.remove( barcode );
             hmImgr2.set( barcode, imgr2 );
-            db_update_Imgr2_Receipt( imgr2 );
             var objImgr2 = {
                 ScanQty:imgr2.ScanQty
             }, strFilter = 'TrxNo=' + imgr2.TrxNo + ' And LineItemNo=' + imgr2.LineItemNo;
             SqlService.Update('Imgr2_Receipt', objImgr2, strFilter).then();
             $scope.Detail.Scan.Qty = imgr2.ScanQty;
             $scope.Detail.Scan.SerialNo = '';
-            $( '#txt-sn' ).select();
             $scope.$apply();
         };
         var showSn = function ( sn ) {
@@ -266,21 +259,23 @@ appControllers.controller( 'GrDetailCtrl', [
             }
         };
         $scope.openCam = function ( type ) {
-            if ( is.equal( type, 'BarCode' ) ) {
-                $cordovaBarcodeScanner.scan().then( function ( imageData ) {
-                    $scope.Detail.Scan.BarCode = imageData.text;
-                    showImpr( $scope.Detail.Scan.BarCode);
-                }, function ( error ) {
-                    $cordovaToast.showShortBottom( error );
-                } );
-            } else if ( is.equal( type, 'SerialNo' ) ) {
-                if ( $( '#txt-sn' ).attr( 'readonly' ) != 'readonly' ) {
+            if(!ENV.fromWeb){
+                if ( is.equal( type, 'BarCode' ) ) {
                     $cordovaBarcodeScanner.scan().then( function ( imageData ) {
-                        $scope.Detail.Scan.SerialNo = imageData.text;
-                        showSn( $scope.Detail.Scan.SerialNo );
+                        $scope.Detail.Scan.BarCode = imageData.text;
+                        showImpr( $scope.Detail.Scan.BarCode);
                     }, function ( error ) {
                         $cordovaToast.showShortBottom( error );
                     } );
+                } else if ( is.equal( type, 'SerialNo' ) ) {
+                    if ( $( '#txt-sn' ).attr( 'readonly' ) != 'readonly' ) {
+                        $cordovaBarcodeScanner.scan().then( function ( imageData ) {
+                            $scope.Detail.Scan.SerialNo = imageData.text;
+                            showSn( $scope.Detail.Scan.SerialNo );
+                        }, function ( error ) {
+                            $cordovaToast.showShortBottom( error );
+                        } );
+                    }
                 }
             }
         };
@@ -339,11 +334,10 @@ appControllers.controller( 'GrDetailCtrl', [
                     ProductCode : '',
                     ProductDescription : ''
                 };
+                $scope.Detail.Imgr2.CustBatchNo = '';
                 $( '#txt-sn' ).attr( 'readonly', true );
-                $( '#txt-barcode' ).select();
             } else if ( is.equal( type, 'SerialNo' ) && is.not.empty($scope.Detail.Scan.SerialNo) ) {
                 $scope.Detail.Scan.SerialNo = '';
-                $( '#txt-sn' ).select();
             }
         };
         $scope.changeQty = function () {
@@ -362,7 +356,11 @@ appControllers.controller( 'GrDetailCtrl', [
                             type: 'button-positive',
                             onTap: function ( e ) {
                                 imgr2.ScanQty = $scope.Detail.Scan.Qty;
-                                db_update_Imgr2_Receipt( imgr2 );
+                                var obj = {
+                                    ScanQty: imgr2.ScanQty
+                                };
+                                var strFilter = 'TrxNo=' + imgr2.TrxNo + ' And LineItemNo=' + imgr2.LineItemNo;
+                                SqlService.Update('Imgr2_Receipt', obj, strFilter).then();
                             }
                         } ]
                     } );
@@ -413,8 +411,29 @@ appControllers.controller( 'GrDetailCtrl', [
                     }
                 } else {
                     $ionicLoading.hide();
+                    PopupService.Info(popup, 'No Product In This GRN').then();
                 }
+            },function(error){
+                $ionicLoading.hide();
+                PopupService.Alert(popup, error.message).then();
             });
+        };
+        $scope.enter = function(ev, type) {
+            if (is.equal(ev.keyCode,13)) {
+                if ( is.null(popup) ) {
+                    if(is.equal(type,'barcode')){
+                        showImpr( $scope.Detail.Scan.BarCode );
+                    }else{
+                        showSn( $scope.Detail.Scan.SerialNo );
+                    }
+                } else {
+                    popup.close();
+                    popup = null;
+                }
+                if ( !ENV.fromWeb ) {
+                    $cordovaKeyboard.close();
+                }
+            }
         };
         var sendConfirm = function () {
             var userID = sessionStorage.getItem( 'UserId' ).toString();
@@ -453,7 +472,7 @@ appControllers.controller( 'GrDetailCtrl', [
             objUri.addSearch('GoodsReceiptNoteNo',GoodsReceiptNoteNo);
             ApiService.Get( objUri, true ).then( function success( result ) {
                 $scope.Detail.Imgr2s = result.data.results;
-                SqlService.Delete('Imsn1_Receipt').then(function(res){
+                //SqlService.Delete('Imsn1_Receipt').then(function(res){
                     SqlService.Delete('Imgr2_Receipt').then(function(res){
                         for ( var i = 0; i < $scope.Detail.Imgr2s.length; i++ ) {
                             var objImgr2 = $scope.Detail.Imgr2s[ i ];
@@ -461,39 +480,9 @@ appControllers.controller( 'GrDetailCtrl', [
                             SqlService.Insert('Imgr2_Receipt', objImgr2).then();
                         }
                     });
-                });
+                //});
             } );
         };
         GetImgr2ProductCode( $scope.Detail.GRN );
-        $( '#txt-barcode' ).on( 'focus', ( function () {
-            if ( window.cordova ) {
-                $cordovaKeyboard.close();
-            }
-        } ) );
-        $( '#txt-barcode' ).on( 'click', ( function () {
-            if ( window.cordova ) {
-                $cordovaKeyboard.close();
-            }
-        } ) );
-        $( '#txt-barcode' ).on( 'keydown', function ( e ) {
-            if ( e.which === 9 || e.which === 13 ) {
-                if ( popup === null ) {
-                    showImpr( $scope.Detail.Scan.BarCode );
-                } else {
-                    popup.close();
-                    popup = null;
-                }
-            }
-        } );
-        $( '#txt-sn' ).on( 'keydown', function ( e ) {
-            if ( e.which === 9 || e.which === 13 ) {
-                if ( popup === null ) {
-                    showSn( $scope.Detail.Scan.SerialNo );
-                } else {
-                    popup.close();
-                    popup = null;
-                }
-            }
-        } );
     }
 ] );

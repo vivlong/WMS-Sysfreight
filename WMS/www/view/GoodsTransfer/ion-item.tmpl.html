@@ -58,7 +58,7 @@
                     <p>Balance<span class="pull-right">:&nbsp;</span></p>
                 </div>
                 <div class="col-33">
-                    <p><span ng-bind="item.Qty - item.ScanQty"></span></p>
+                    <p><span ng-bind="item.QtyBal - item.ScanQty"></span></p>
                 </div>
             </div>
         </div>
@@ -85,7 +85,7 @@
         <div class="col-67">
             <div class="row" style="margin-left:0px;">
                 <div class="col col-60">
-                    <input type="text" id="txt-storeno-{{ item.BatchLineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;">
+                    <input type="text" id="txt-storeno-{{ item.BatchLineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;" ng-keypress="enter($event)">
                 </div>
                 <div class="col col-20">
                     <button class="button button-clear button-small" ng-click="openCam(item)">

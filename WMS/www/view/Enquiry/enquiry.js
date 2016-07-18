@@ -1,12 +1,16 @@
 appControllers.controller( 'EnquiryListCtrl', [
+    'ENV',
     '$scope',
     '$stateParams',
     '$state',
+    '$cordovaKeyboard',
     'ApiService',
     function (
+        ENV,
         $scope,
         $stateParams,
         $state,
+        $cordovaKeyboard,
         ApiService ) {
         $scope.Impr1 = {};
         $scope.Impm1 = {};
@@ -56,6 +60,9 @@ appControllers.controller( 'EnquiryListCtrl', [
                 } );
             } else {
                 $scope.Impm1sEnquiry = {};
+            }
+            if(!ENV.fromWeb){
+                $cordovaKeyboard.close();
             }
         };
     }

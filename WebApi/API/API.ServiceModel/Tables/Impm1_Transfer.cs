@@ -15,7 +15,6 @@ namespace WebApi.ServiceModel.Tables
 								public string GoodsReceiveorIssueNo { get; set; }
 								public string UserDefine1 { get; set; }
 								public string FromToStoreNo { get; set; }
-								public int Qty { get; set; }
 								public int QtyBal { get; set; }
 								public int ScanQty { get; set; }
 				}
