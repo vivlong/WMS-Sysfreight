@@ -166,6 +166,7 @@ appControllers.controller( 'GrDetailCtrl', [
                 CustBatchNo : ''
             },
             Impr1: {
+                BarCode: '',
                 ProductCode : '',
                 ProductDescription : ''
             },
@@ -199,12 +200,12 @@ appControllers.controller( 'GrDetailCtrl', [
                     Qty : imgr2.ScanQty
                 };
             }
-            $scope.$apply();
         };
         var showImpr = function ( barcode ) {
             if ( hmImgr2.has( barcode ) ) {
                 var imgr2 = hmImgr2.get( barcode );
                 $scope.Detail.Impr1 = {
+                    BarCode : barcode,
                     ProductCode : imgr2.ProductCode,
                     ProductDescription : imgr2.ProductDescription
                 };
@@ -331,6 +332,7 @@ appControllers.controller( 'GrDetailCtrl', [
                     Qty : 0
                 };
                 $scope.Detail.Impr1 = {
+                    BarCode : '',
                     ProductCode : '',
                     ProductDescription : ''
                 };
@@ -341,9 +343,9 @@ appControllers.controller( 'GrDetailCtrl', [
             }
         };
         $scope.changeQty = function () {
-            if ( is.not.empty( $scope.Detail.Scan.BarCode ) ) {
-                if ( hmImgr2.count() > 0 && hmImgr2.has( $scope.Detail.Scan.BarCode ) ) {
-                    var imgr2 = hmImgr2.get( $scope.Detail.Scan.BarCode );
+            if ( is.not.empty( $scope.Detail.Impr1.BarCode ) ) {
+                if ( hmImgr2.count() > 0 && hmImgr2.has( $scope.Detail.Impr1.BarCode ) ) {
+                    var imgr2 = hmImgr2.get( $scope.Detail.Impr1.BarCode );
                     var promptPopup = $ionicPopup.show( {
                         template: '<input type="number" ng-model="Detail.Scan.Qty">',
                         title: 'Enter Qty',
