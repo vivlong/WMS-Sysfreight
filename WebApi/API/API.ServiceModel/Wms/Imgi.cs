@@ -10,15 +10,18 @@ using WebApi.ServiceModel.Tables;
 
 namespace WebApi.ServiceModel.Wms
 {
-
-				[Route("/wms/imgi1", "Get")]				//imgi1?GoodsIssueNoteNo= & CustomerCode=
+				[Route("/wms/imgi1", "Get")]				//imgi1?GoodsIssueNoteNo= &CustomerCode= &StatusCode=
+				[Route("/wms/imgi1/update", "Get")]				//imgi1?TrxNo= &UserID= &StatusCode=
 				[Route("/wms/imgi2", "Get")]				//imgi2?GoodsIssueNoteNo=
 				[Route("/wms/imgi2/picking", "Get")]				//picking?GoodsIssueNoteNo=
 				[Route("/wms/imgi2/verify", "Get")]					//verify?GoodsIssueNoteNo=
     public class Imgi : IReturn<CommonResponse>
     {
         public string CustomerCode { get; set; }
-        public string GoodsIssueNoteNo { get; set; }
+								public string GoodsIssueNoteNo { get; set; }
+								public string TrxNo { get; set; }
+								public string UserID { get; set; }
+								public string StatusCode { get; set; }
     }
     public class Imgi_Logic
     {
@@ -29,18 +32,38 @@ namespace WebApi.ServiceModel.Wms
             try
             {
 																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
-                {
+                {																				
                     if (!string.IsNullOrEmpty(request.CustomerCode))
                     {
-                        Result = db.SelectParam<Imgi1>(
-                            i => i.CustomerCode != null && i.CustomerCode != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode!="EXE" && i.StatusCode!="CMP" && i.CustomerCode == request.CustomerCode
-                        ).OrderByDescending(i => i.IssueDateTime).ToList<Imgi1>();
+																								if (!string.IsNullOrEmpty(request.StatusCode))
+																								{
+																												Result = db.SelectParam<Imgi1>(
+																															i => i.CustomerCode != null && i.CustomerCode != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.CustomerCode == request.CustomerCode
+																												).OrderByDescending(i => i.IssueDateTime).ToList<Imgi1>();
+																								}
+																								else
+																								{
+																												Result = db.SelectParam<Imgi1>(
+																																i => i.CustomerCode != null && i.CustomerCode != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.CustomerCode == request.CustomerCode
+																												).OrderByDescending(i => i.IssueDateTime).ToList<Imgi1>();
+																								}
+                        
                     }
                     else if (!string.IsNullOrEmpty(request.GoodsIssueNoteNo))
                     {
-                        Result = db.SelectParam<Imgi1>(
-                            i => i.CustomerCode != null && i.CustomerCode != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode!="EXE" && i.StatusCode!="CMP" && i.GoodsIssueNoteNo.StartsWith(request.GoodsIssueNoteNo)
-                        ).OrderByDescending(i => i.IssueDateTime).ToList<Imgi1>();
+																								if (!string.IsNullOrEmpty(request.StatusCode))
+																								{
+																												Result = db.SelectParam<Imgi1>(
+																																i => i.CustomerCode != null && i.CustomerCode != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.GoodsIssueNoteNo.StartsWith(request.GoodsIssueNoteNo)
+																												).OrderByDescending(i => i.IssueDateTime).ToList<Imgi1>();
+																								}
+																								else
+																								{
+																												Result = db.SelectParam<Imgi1>(
+																																i => i.CustomerCode != null && i.CustomerCode != "" && i.StatusCode != null && i.StatusCode != "DEL" && i.StatusCode != "EXE" && i.StatusCode != "CMP" && i.GoodsIssueNoteNo.StartsWith(request.GoodsIssueNoteNo)
+																												).OrderByDescending(i => i.IssueDateTime).ToList<Imgi1>();
+																								}
+                        
                     }                  
                 }
             }
@@ -65,7 +88,7 @@ namespace WebApi.ServiceModel.Wms
 																								"0 AS QtyBal, 0 AS ScanQty " +
 																								"From Imgi2 " +
 																								"Left Join Imgi1 On Imgi2.TrxNo=Imgi1.TrxNo " +
-																								"Where Imgi1.GoodsIssueNoteNo='" + request.GoodsIssueNoteNo + "'";
+																								"Where IsNull(Imgi1.StatusCode,'')='USE' And Imgi1.GoodsIssueNoteNo='" + request.GoodsIssueNoteNo + "'";
 																				Result = db.Select<Imgi2_Picking>(strSql);
 																}
 												}
@@ -90,8 +113,29 @@ namespace WebApi.ServiceModel.Wms
 																								"0 AS QtyBal, 0 AS ScanQty " +
 																								"From Imgi2 " +
 																								"Left Join Imgi1 On Imgi2.TrxNo=Imgi1.TrxNo " +
-																								"Where Imgi1.GoodsIssueNoteNo='" + request.GoodsIssueNoteNo + "'";
+																								"Where (IsNull(Imgi1.StatusCode,'')='USE' Or IsNull(Imgi1.StatusCode,'')='CMP') And Imgi1.GoodsIssueNoteNo='" + request.GoodsIssueNoteNo + "'";
 																				Result = db.Select<Imgi2_Verify>(strSql);
+																}
+												}
+												catch { throw; }
+												return Result;
+								}
+								public int Update_Imgi1_Status(Imgi request)
+								{
+												int Result = -1;
+												try
+												{
+																using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+																{
+																				Result = db.Update<Imgi1>(
+																								new
+																								{
+																												StatusCode = request.StatusCode,
+																												CompleteBy = request.UserID,
+																												CompleteDate = DateTime.Now
+																								},
+																								p => p.TrxNo == int.Parse(request.TrxNo)
+																				);
 																}
 												}
 												catch { throw; }
