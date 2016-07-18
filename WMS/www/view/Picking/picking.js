@@ -431,9 +431,10 @@ appControllers.controller( 'PickingDetailCtrl', [
             SqlService.Select( 'Imgi2_Picking', '*' ).then( function ( results ) {
                 var len = results.rows.length;
                 if ( len > 0 ) {
+                    var imgi2;
                     var blnDiscrepancies = false;
                     for ( var i = 0; i < len; i++ ) {
-                        var imgi2 = results.rows.item( i );
+                        imgi2 = results.rows.item( i );
                         if ( is.not.empty( imgi2.BarCode ) ) {
                             if ( imgi2.Qty != imgi2.ScanQty ) {
                                 console.log( 'Product (' + imgi2.ProductCode + ') Qty not equal.' );
@@ -449,7 +450,13 @@ appControllers.controller( 'PickingDetailCtrl', [
                             $scope.openModal();
                         } );
                     } else {
-                        PopupService.Info( popup, 'Confirm Success' ).then( function ( res ) {
+                        var objUri = ApiService.Uri( true, '/api/wms/imgi1/update' );
+                        objUri.addSearch( 'TrxNo', imgi2.TrxNo );
+                        objUri.addSearch( 'UserID', sessionStorage.getItem( 'UserId' ).toString() );
+                        objUri.addSearch( 'StatusCode', 'CMP' );
+                        ApiService.Get( objUri, true ).then( function ( res ) {
+                            return PopupService.Info( popup, 'Confirm Success' );
+                        }).then( function ( res ) {
                             $scope.returnList();
                         } );
                     }

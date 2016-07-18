@@ -28,6 +28,7 @@ appControllers.controller( 'VginListCtrl', [
             if ( is.not.undefined( Grn ) && is.not.empty( Grn ) ) {
                 var objUri = ApiService.Uri( true, '/api/wms/imgi1' );
                 objUri.addSearch( 'GoodsIssueNoteNo', Grn );
+                objUri.addSearch( 'StatusCode', 'USE-CMP' );
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.GinNos = result.data.results;
                 } );
@@ -36,6 +37,7 @@ appControllers.controller( 'VginListCtrl', [
         $scope.ShowImgi1 = function ( Customer ) {
             var objUri = ApiService.Uri( true, '/api/wms/imgi1' );
             objUri.addSearch( 'CustomerCode', Customer );
+            objUri.addSearch( 'StatusCode', 'USE-CMP' );
             ApiService.Get( objUri, true ).then( function success( result ) {
                 $scope.imgi1s = result.data.results;
             } );
