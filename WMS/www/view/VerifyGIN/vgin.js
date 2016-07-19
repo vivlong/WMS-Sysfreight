@@ -283,7 +283,7 @@ appControllers.controller( 'VginDetailCtrl', [
             }
         };
         $scope.changeQty = function () {
-            if ( is.not.empqty($scope.Detail.Scan.BarCode) && hmImgi2.count() > 0 ) {
+            if ( is.not.empty($scope.Detail.Scan.BarCode) && hmImgi2.count() > 0 ) {
                 var imgi2 = hmImgi2.get( $scope.Detail.Scan.BarCode );
                 var promptPopup = $ionicPopup.show( {
                     template: '<input type="number" ng-model="Detail.Scan.Qty" ng-change="checkQty();">',
